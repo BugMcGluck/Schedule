@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Schedule</string>
+    <string name="action_settings">Settings</string>
+    <string name="text_Task">Предмет</string>
+    <string name="text_Teacher">Преподаватель</string>
+    <string name="text_Room">Аудитория</string>
+</resources>

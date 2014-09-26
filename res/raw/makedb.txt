@@ -1,0 +1,58 @@
+CREATE TABLE Class(
+  id Integer NOT NULL PRIMARY KEY,
+  FullName Varchar2(200 ) NOT NULL,
+  ShortName Varchar2(10 ) NOT NULL
+);
+CREATE TABLE Room(
+  id Integer NOT NULL PRIMARY KEY,
+  Building_id Integer NOT NULL,
+  Name Varchar2(10 ) NOT NULL
+);
+CREATE TABLE Building(
+  id Integer NOT NULL PRIMARY KEY,
+  Name Varchar2(10 ) NOT NULL,
+  Geo Varchar2(50 ),
+  Photo Long raw
+);
+CREATE TABLE Task_type(
+  id Integer NOT NULL PRIMARY KEY,
+  FullName Varchar2(50 ) NOT NULL,
+  ShortName Varchar2(10 ) NOT NULL
+);
+CREATE TABLE Task(
+  id Integer NOT NULL PRIMARY KEY,
+  Task_type_id Integer NOT NULL,
+  FullName Varchar2(100 ) NOT NULL,
+  ShortName Varchar2(30 ) NOT NULL
+);
+CREATE TABLE Task_time(
+  id Integer NOT NULL PRIMARY KEY,
+  StartTime Date NOT NULL,
+  EndTime Date,
+  Description Varchar2(200 )
+);
+CREATE TABLE Post(
+  id Integer NOT NULL PRIMARY KEY,
+  FullName Varchar2(100 ) NOT NULL,
+  ShortName Varchar2(100 ) NOT NULL
+);
+CREATE TABLE Teacher(
+  id Integer NOT NULL PRIMARY KEY,
+  LastName Varchar2(60 ) NOT NULL,
+  FirstName Varchar2(60 ) NOT NULL,
+  MiddleName Varchar2(60 ),
+  Post_id Integer,
+  Photo Long raw
+);
+CREATE TABLE Schedule(
+  id Integer NOT NULL PRIMARY KEY,
+  Task_id Integer NOT NULL,
+  Room_id Integer,
+  Teacher_id Integer NOT NULL,
+  Class_id Integer NOT NULL,
+  Task_time_id Integer NOT NULL,
+  Day Date NOT NULL,
+  Is_active Number(1,0) NOT NULL,
+  Last_update Text NOT NULL
+);
+
