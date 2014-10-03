@@ -43,10 +43,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 	DBHelper dbHelper;
 	SQLiteDatabase db;
-	List<Schedule> schedules = new ArrayList<MainActivity.Schedule>();
+	public static List<Schedule> schedules = new ArrayList<Schedule>();
 //	GregorianCalendar calendar = new GregorianCalendar();
 //	Date date = calendar.getTime();
-	Date maxDate;
+//	Date maxDate;
 
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
@@ -63,31 +63,60 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		setContentView(R.layout.main);
 
 		dbHelper = new DBHelper(this);
-		maxDate = getScheduleLastDate();
+//		maxDate = getScheduleLastDate();
 		FillDates();
-		Log.d("!!!MAXDATE", maxDate.toString());
+//		Log.d("!!!MAXDATE", maxDate.toString());
 		
 		pager = (ViewPager) findViewById(R.id.pager);
+		Log.d("!!PAGER", pager.toString());
 		pagerAdapter = new MyFragmentStatePagerAdapter(
 				getSupportFragmentManager(), this);
 		pager.setAdapter(pagerAdapter);
 
-		pager.setOnPageChangeListener(new OnPageChangeListener() {
-
-			@Override
-			public void onPageSelected(int position) {
-
+//		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+//				"yyyy-MM-dd", new Locale("ru"));
+		GregorianCalendar cal = new GregorianCalendar();
+		Date currentDate = new GregorianCalendar().getTime();
+		cal.setTime(currentDate);
+		cal.clear(GregorianCalendar.MILLISECOND);
+		cal.clear(GregorianCalendar.SECOND);
+		cal.clear(GregorianCalendar.HOUR);
+		currentDate = cal.getTime();
+//		try {
+//			currentDate = simpleDateFormat.parse(simpleDateFormat.format(currentDate));
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+		int startPosition = 0;
+		for (int i = 0; i < schedules.size(); i++) {
+			if (currentDate.compareTo(schedules.get(i).date) >= 0){
+				if (currentDate.compareTo(schedules.get(i).date) == 0){
+					startPosition = i;
+				}else{
+					startPosition = i + 1;
+				}			
+			} else {
+				break;
 			}
-
-			@Override
-			public void onPageScrolled(int position, float positionOffset,
-					int positionOffsetPixels) {
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-			}
-		});
+		}
+		
+		pager.setCurrentItem(startPosition);
+//		pager.setOnPageChangeListener(new OnPageChangeListener() {
+//
+//			@Override
+//			public void onPageSelected(int position) {
+//
+//			}
+//
+//			@Override
+//			public void onPageScrolled(int position, float positionOffset,
+//					int positionOffsetPixels) {
+//			}
+//
+//			@Override
+//			public void onPageScrollStateChanged(int state) {
+//			}
+//		});
 
 		// readSchedule();
 		// showList();
@@ -222,7 +251,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return c;
 	}
 
-	private Date getScheduleLastDate() {
+/*	private Date getScheduleLastDate() {
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select max(day) from schedule where is_active = 1;";
 		Cursor c = null;
@@ -243,14 +272,16 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			c.close();
 			return d;
 		}
 		return null;
-	}
+	}*/
 
 	private void FillDates(){
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select distinct day from schedule where is_active = 1;";
+		schedules.clear();
 		Cursor c = null;
 		c = db.rawQuery(sqlQuery, null);
 		if (c != null) {
@@ -269,6 +300,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				}while (c.moveToNext());			
 			}
 		}
+		c.close();
 	}
 	
 	/*
@@ -336,66 +368,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 	}
 
-	class Item {
-		Task task = new Task();
-		Teacher teacher = new Teacher();
-		Room room = new Room();
-		Class clas = new Class();
-		Task_time task_time = new Task_time();
-		Calendar day;
-
-		class Teacher {
-			String lastName;
-			String firstName;
-			String middleName;
-			Post post = new Post();
-			Bitmap photo;
-		}
-
-		class Post {
-			String fullName;
-			String shortName;
-		}
-
-		class Task {
-			Task_type task_type = new Task_type();
-			String fullName;
-			String shortName;
-		}
-
-		class Task_type {
-			String fullName;
-			String shortName;
-		}
-
-		class Room {
-			Building building = new Building();
-			String name;
-		}
-
-		class Building {
-			String name;
-			String geo;
-			Bitmap photo;
-		}
-
-		class Class {
-			String fullName;
-			String shortName;
-		}
-
-		class Task_time {
-			String startTime;
-			String endTime;
-			String description;
-		}
-	}
-
-	class Schedule{
-		Date date;
-		List<Item> schedule = new ArrayList<MainActivity.Item>();
-	}
 	
+
 	private class MyFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
 		Context ctx;
@@ -403,6 +377,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		public MyFragmentStatePagerAdapter(FragmentManager fm, Context context) {
 			super(fm);
 			ctx = context;
+//			this.setPrimaryItem(pager, 5, this.instantiateItem(pager, 5));
 		}
 
 		@Override
@@ -411,18 +386,21 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			Log.d("!!!SIZE", String.valueOf(schedules.get(position).schedule.size()));
 			if (schedules.get(position).schedule.size() == 0){
 				readSchedule(schedules.get(position).date);
-			}		
-			return PageFragment.newInstance(position, schedules.get(position), ctx);
+			}
+		    Log.d("!!!NewInstance", String.valueOf(position));
+		    Log.d("NewInstance", schedules.get(position).date.toString());
+		    Log.d("NewInstance", schedules.get(position).schedule.get(0).task.shortName);
+			return Page.newInstance(position, ctx);
 		}
 
 		@Override
 		public int getCount() {
-			return PAGE_COUNT;
+			return schedules.size();
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM",
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE dd MMM",
 					new Locale("ru"));
 			return simpleDateFormat.format(schedules.get(position).date);
 		}
