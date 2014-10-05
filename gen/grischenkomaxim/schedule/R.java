@@ -1110,7 +1110,6 @@ containing a value of this type.
         public static final int icon=0x7f06002a;
         public static final int ifRoom=0x7f06000a;
         public static final int image=0x7f060027;
-        public static final int imageView1=0x7f06003d;
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
         public static final int middle=0x7f060012;
@@ -1144,6 +1143,7 @@ containing a value of this type.
         public static final int tableRow1=0x7f060048;
         public static final int tableRow2=0x7f06004b;
         public static final int tableRow3=0x7f06004e;
+        public static final int textLetterIcon=0x7f06003d;
         public static final int textRoom=0x7f060041;
         public static final int textTask=0x7f06003f;
         public static final int textTaskEndTime=0x7f06003e;

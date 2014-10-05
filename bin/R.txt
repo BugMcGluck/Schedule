@@ -265,7 +265,6 @@ int id homeAsUp 0x7f060005
 int id icon 0x7f06002a
 int id ifRoom 0x7f06000a
 int id image 0x7f060027
-int id imageView1 0x7f06003d
 int id listMode 0x7f060001
 int id list_item 0x7f060029
 int id middle 0x7f060012
@@ -299,6 +298,7 @@ int id tableDetailed 0x7f060047
 int id tableRow1 0x7f060048
 int id tableRow2 0x7f06004b
 int id tableRow3 0x7f06004e
+int id textLetterIcon 0x7f06003d
 int id textRoom 0x7f060041
 int id textTask 0x7f06003f
 int id textTaskEndTime 0x7f06003e

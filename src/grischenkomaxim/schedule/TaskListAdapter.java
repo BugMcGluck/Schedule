@@ -1,10 +1,9 @@
 package grischenkomaxim.schedule;
 
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +55,7 @@ public class TaskListAdapter extends BaseAdapter {
 		TextView tv_room = (TextView) taskView.findViewById(R.id.textRoom);
 		TextView tv_task_start_time = (TextView) taskView.findViewById(R.id.textTaskStartTime);
 		TextView tv_task_end_time = (TextView) taskView.findViewById(R.id.textTaskEndTime);
+		TextView tv_letter = (TextView) taskView.findViewById(R.id.textLetterIcon);
 
 		
 		String task = it.task.task_type.shortName + " " + it.task.shortName;
@@ -68,6 +68,15 @@ public class TaskListAdapter extends BaseAdapter {
 		tv_room.setText(it.room.name);
 		tv_task_start_time.setText(it.task_time.startTime);
 		tv_task_end_time.setText(it.task_time.endTime);
+		String letter = it.task.fullName.substring(0, 1);
+		tv_letter.setText(letter); 
+		for (int i = 0; i < MainActivity.tasks.size(); i++) {
+			if (MainActivity.tasks.get(i).equals(it.task.fullName)){
+				tv_letter.setBackgroundColor(MainActivity.colors[i]);
+			}
+		}
+		
+		
 		/*Log.d("!!!POsition", String.valueOf(position));
 		Log.d("!!!POs % 2", String.valueOf(position % 2));
 		if ((position % 2) != 0 ){

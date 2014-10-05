@@ -56,3 +56,118 @@ CREATE TABLE Schedule(
   Last_update Text NOT NULL
 );
 
+
+
+
+
+insert into Class values (null, 'АСОИ 62', 'АС-62');
+
+insert into Building values (null, '4', null, null);
+
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-01');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '2-01');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '3-01');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '1-01');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-01');
+
+INSERT INTO Task_type VALUES (null, 'лекция', 'лек.');
+INSERT INTO Task_type VALUES (null, 'практические занятия', 'практ.');
+INSERT INTO Task_type VALUES (null, 'лабораторная работа', 'лаб.');
+INSERT INTO Task_type VALUES (null, 'контрольная работа', 'контр.');
+INSERT INTO Task_type VALUES (null, 'зачёт', 'зач.');
+INSERT INTO Task_type VALUES (null, 'экзамен', 'экз.');
+INSERT INTO Task_type VALUES (null, 'защита курсового проекта', 'защ.');
+
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Проектирование  систем обработки данных', 'ПСОД');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Проектирование  систем обработки данных', 'ПСОД');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'зачёт'), 'Проектирование  систем обработки данных', 'ПСОД');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'защита курсового проекта'), 'Проектирование  систем обработки данных', 'ПСОД');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Защита компьютерных сетей и систем', 'Защита КСиС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'контрольная работа'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Диагностика и обслуживание сетей', 'ДиОС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Диагностика и обслуживание сетей', 'ДиОС');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Информационные технологии и психология управления', 'ИТиПУ');
+INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Бизнес технологии в Internet', 'БТ в Internet');
+
+INSERT INTO Task_time VALUES (null, '8:20', '09:55', '1-я пара');
+INSERT INTO Task_time VALUES (null, '10:10', '11:45', '2-я пара');
+INSERT INTO Task_time VALUES (null, '12:05', '13:40', '3-я пара');
+INSERT INTO Task_time VALUES (null, '14:10', '15:45', '4-я пара');
+INSERT INTO Task_time VALUES (null, '15:55', '17:30', '5-я пара');
+INSERT INTO Task_time VALUES (null, '17:40', '19:15', '6-я пара');
+INSERT INTO Task_time VALUES (null, '8:20', null, 'экзамен/зачёт');
+
+INSERT INTO Post VALUES (null, 'преподаватель', 'преп.');
+INSERT INTO Post VALUES (null, 'старший преподаватель', 'ст. преп.');
+INSERT INTO Post VALUES (null, 'ассистент', 'ас.');
+INSERT INTO Post VALUES (null, 'лаборант', 'лаб.');
+INSERT INTO Post VALUES (null, 'доцент', 'доц.');
+INSERT INTO Post VALUES (null, 'професор', 'проф.');
+INSERT INTO Post VALUES (null, 'академик', 'акад.');
+
+INSERT INTO Teacher VALUES (null, 'Чечет', 'Павел', 'Леонидович', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
+INSERT INTO Teacher VALUES (null, 'Шаповалова', 'Наталья', 'Александровна', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
+INSERT INTO Teacher VALUES (null, 'Кулинченко', 'Владимир', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
+INSERT INTO Teacher VALUES (null, 'Кучеров', 'Александр', 'Иванович', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
+INSERT INTO Teacher VALUES (null, 'Воруев', 'Андрей', 'Валерьевич', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
+INSERT INTO Teacher VALUES (null, 'Крайников', 'Александр', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'лаборант'),null);
+INSERT INTO Teacher VALUES (null, 'Левчук', 'Виктор', 'Дмитриевич', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
+INSERT INTO Teacher VALUES (null, 'Леванцов', 'Виктор', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
+
+INSERT INTO Schedule VALUES (null, 1, null, 1, 1, 4, '2014-10-06', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 1, null, 1, 1, 5, '2014-10-06', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 5, null, 2, 1, 6, '2014-10-06', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 9, null, 5, 1, 2, '2014-10-07', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 1, null, 1, 1, 4, '2014-10-07', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-07', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 6, '2014-10-07', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 8, null, 4, 1, 7, '2014-10-08', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 5, null, 2, 1, 4, '2014-10-08', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 5, null, 2, 1, 5, '2014-10-08', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 6, null, 2, 1, 6, '2014-10-08', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 4, '2014-10-09', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-09', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 10, null, 5, 1, 6, '2014-10-09', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 10, null, 5, 1, 3, '2014-10-10', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 2, null, 1, 1, 4, '2014-10-10', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 5, '2014-10-10', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 6, '2014-10-10', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 5, null, 2, 1, 4, '2014-10-11', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 5, null, 2, 1, 5, '2014-10-11', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 11, null, 5, 1, 7, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 6, null, 2, 1, 4, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 2, null, 1, 1, 5, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 13, null, 3, 1, 3, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 4, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 3, null, 1, 1, 7, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 5, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 4, null, 1, 1, 7, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 5, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 7, null, 2, 1, 7, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 5, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 6, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+
+INSERT INTO Schedule VALUES (null, 13, null, 3, 1, 3, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 4, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+
+

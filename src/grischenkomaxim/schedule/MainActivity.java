@@ -2,6 +2,7 @@ package grischenkomaxim.schedule;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import android.R.color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -47,7 +49,17 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 //	GregorianCalendar calendar = new GregorianCalendar();
 //	Date date = calendar.getTime();
 //	Date maxDate;
-
+	public static final int[] colors = {
+		Color.CYAN,
+		Color.GREEN,
+		Color.MAGENTA,
+		Color.RED,
+		Color.YELLOW,
+		Color.DKGRAY,
+		Color.LTGRAY
+	};
+	public static List<String> tasks = new ArrayList<String>();
+	
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
 	int PAGE_COUNT = 5;
@@ -65,6 +77,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		dbHelper = new DBHelper(this);
 //		maxDate = getScheduleLastDate();
 		FillDates();
+		FillTasks();
 //		Log.d("!!!MAXDATE", maxDate.toString());
 		
 		pager = (ViewPager) findViewById(R.id.pager);
@@ -80,8 +93,12 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		cal.setTime(currentDate);
 		cal.clear(GregorianCalendar.MILLISECOND);
 		cal.clear(GregorianCalendar.SECOND);
+		cal.clear(GregorianCalendar.MINUTE);
 		cal.clear(GregorianCalendar.HOUR);
+		cal.clear(GregorianCalendar.HOUR_OF_DAY);
+		Log.d("!!!Calendar", cal.toString());
 		currentDate = cal.getTime();
+		
 //		try {
 //			currentDate = simpleDateFormat.parse(simpleDateFormat.format(currentDate));
 //		} catch (ParseException e) {
@@ -89,6 +106,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 //		}
 		int startPosition = 0;
 		for (int i = 0; i < schedules.size(); i++) {
+			Log.d("!!!CurrentDate", currentDate.toString());
+			Log.d("!!!ScheduleDate", schedules.get(i).date.toString());
 			if (currentDate.compareTo(schedules.get(i).date) >= 0){
 				if (currentDate.compareTo(schedules.get(i).date) == 0){
 					startPosition = i;
@@ -303,6 +322,22 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		c.close();
 	}
 	
+	private void FillTasks(){
+		db = dbHelper.getWritableDatabase();
+		String sqlQuery = "select distinct fullname from task;";
+		tasks.clear();
+		Cursor c = null;
+		c = db.rawQuery(sqlQuery, null);
+		if (c != null) {
+			if (c.moveToFirst()){
+				do {
+					tasks.add(c.getString(0));
+				}while (c.moveToNext());			
+			}
+		}
+		c.close();
+	}
+	
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
 	 * findViewById(R.id.linLayout); LayoutInflater ltInflater =
@@ -341,7 +376,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		public void onCreate(SQLiteDatabase db) {
 			InputStream is = null;
 			is = getResources().openRawResource(R.raw.makedb);
-			byte[] buffer = new byte[10000];
+			byte[] buffer = new byte[20000];
 			try {
 				is.read(buffer);
 			} catch (IOException e) {
@@ -349,10 +384,18 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				e.printStackTrace();
 			}
 			String sql = new String(buffer);
-
-			// создаем таблицу с полями
+			Log.d("!!!SQLString", sql);
 			db.beginTransaction();
-			db.execSQL(sql);
+			int index = 0;
+			while ((index = sql.indexOf(";")) != -1){
+				String s = sql.substring(0, index);
+				Log.d("!!!SQLString", s); 
+				db.execSQL(s);
+				sql = sql.substring(index + 1);
+			}
+			// создаем таблицу с полями
+			
+			db.setTransactionSuccessful();
 			db.endTransaction();
 			try {
 				is.close();
