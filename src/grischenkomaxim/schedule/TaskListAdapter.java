@@ -65,7 +65,8 @@ public class TaskListAdapter extends BaseAdapter {
 						+ it.teacher.firstName.charAt(0) + ". " 
 						+ it.teacher.middleName.charAt(0) + ".";
 		tv_teacher.setText(teacher);
-		tv_room.setText(it.room.name);
+		String room = "ê." + it.room.building.name + ", à." + it.room.name;
+		tv_room.setText(room);
 		tv_task_start_time.setText(it.task_time.startTime);
 		tv_task_end_time.setText(it.task_time.endTime);
 		String letter = it.task.fullName.substring(0, 1);
