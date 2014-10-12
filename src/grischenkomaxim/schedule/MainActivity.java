@@ -146,14 +146,12 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
 		super.onActivityResult(arg0, arg1, arg2);
 		if (arg2 == null) {return;}
-		GregorianCalendar calendar = new GregorianCalendar(arg2.getIntExtra("selectedYear", 0), 
-				arg2.getIntExtra("selectedMonth", 0), 
-				arg2.getIntExtra("selectedDay", 0));
-		Date selectedDate = calendar.getTime();
-		Log.d("selectedDate", String.valueOf(arg2.getIntExtra("selectedDay", 0)) + "/" +
-				String.valueOf(arg2.getIntExtra("selectedMonth", 0)) + "/" +
-				String.valueOf(arg2.getIntExtra("selectedYear", 0)));
-		Log.d("selectedDate", selectedDate.toString());
+//		GregorianCalendar calendar = new GregorianCalendar(arg2.getIntExtra("selectedYear", 0), 
+//				arg2.getIntExtra("selectedMonth", 0), 
+//				arg2.getIntExtra("selectedDay", 0));
+
+		Date selectedDate = new Date(arg2.getLongExtra("selectedDate", 0));
+
 		int startPosition = 0;
 		for (int i = 0; i < schedules.size(); i++) {
 			if (selectedDate.compareTo(schedules.get(i).date) >= 0){
