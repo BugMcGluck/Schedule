@@ -6,4 +6,5 @@
     <string name="text_Task">Предмет</string>
     <string name="text_Teacher">Преподаватель</string>
     <string name="text_Room">Аудитория</string>
+    <string name="action_calendar">Календарь</string>
 </resources>

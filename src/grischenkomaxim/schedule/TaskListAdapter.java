@@ -1,6 +1,5 @@
 package grischenkomaxim.schedule;
 
-import java.util.Date;
 import java.util.List;
 
 import android.content.Context;

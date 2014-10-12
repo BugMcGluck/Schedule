@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,7 +16,6 @@ public class TaskDetailed extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.task_detailed);
 		int position = getIntent().getIntExtra("position", 0);

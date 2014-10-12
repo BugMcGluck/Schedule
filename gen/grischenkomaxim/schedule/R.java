@@ -1077,7 +1077,8 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int ic_launcher=0x7f020057;
+        public static final int ic_action_event=0x7f020057;
+        public static final int ic_launcher=0x7f020058;
     }
     public static final class id {
         public static final int action_bar=0x7f06001c;
@@ -1087,14 +1088,16 @@ containing a value of this type.
         public static final int action_bar_root=0x7f06001a;
         public static final int action_bar_subtitle=0x7f060023;
         public static final int action_bar_title=0x7f060022;
+        public static final int action_calendar=0x7f060053;
         public static final int action_context_bar=0x7f06001d;
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f060051;
+        public static final int action_settings=0x7f060052;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
+        public static final int calendar=0x7f06003c;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
         public static final int default_activity_button=0x7f060028;
@@ -1116,9 +1119,9 @@ containing a value of this type.
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int pager=0x7f060042;
-        public static final int pagerTabStrip=0x7f060043;
-        public static final int progressBarTime=0x7f060046;
+        public static final int pager=0x7f060043;
+        public static final int pagerTabStrip=0x7f060044;
+        public static final int progressBarTime=0x7f060047;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f06002f;
@@ -1139,26 +1142,26 @@ containing a value of this type.
         public static final int split_action_bar=0x7f06001e;
         public static final int submit_area=0x7f060039;
         public static final int tabMode=0x7f060002;
-        public static final int tableDetailed=0x7f060047;
-        public static final int tableRow1=0x7f060048;
-        public static final int tableRow2=0x7f06004b;
-        public static final int tableRow3=0x7f06004e;
-        public static final int textLetterIcon=0x7f06003d;
-        public static final int textRoom=0x7f060041;
-        public static final int textTask=0x7f06003f;
-        public static final int textTaskEndTime=0x7f06003e;
-        public static final int textTaskStartTime=0x7f06003c;
-        public static final int textTeacher=0x7f060040;
+        public static final int tableDetailed=0x7f060048;
+        public static final int tableRow1=0x7f060049;
+        public static final int tableRow2=0x7f06004c;
+        public static final int tableRow3=0x7f06004f;
+        public static final int textLetterIcon=0x7f06003e;
+        public static final int textRoom=0x7f060042;
+        public static final int textTask=0x7f060040;
+        public static final int textTaskEndTime=0x7f06003f;
+        public static final int textTaskStartTime=0x7f06003d;
+        public static final int textTeacher=0x7f060041;
         public static final int title=0x7f06002b;
         public static final int top_action_bar=0x7f060020;
-        public static final int tvDetailedEndTime=0x7f060045;
-        public static final int tvDetailedRoom=0x7f06004f;
-        public static final int tvDetailedRoomName=0x7f060050;
-        public static final int tvDetailedStartTime=0x7f060044;
-        public static final int tvDetailedTask=0x7f060049;
-        public static final int tvDetailedTaskName=0x7f06004a;
-        public static final int tvDetailedTeacher=0x7f06004c;
-        public static final int tvDetailedTeacherName=0x7f06004d;
+        public static final int tvDetailedEndTime=0x7f060046;
+        public static final int tvDetailedRoom=0x7f060050;
+        public static final int tvDetailedRoomName=0x7f060051;
+        public static final int tvDetailedStartTime=0x7f060045;
+        public static final int tvDetailedTask=0x7f06004a;
+        public static final int tvDetailedTaskName=0x7f06004b;
+        public static final int tvDetailedTeacher=0x7f06004d;
+        public static final int tvDetailedTeacherName=0x7f06004e;
         public static final int up=0x7f060021;
         public static final int useLogo=0x7f060003;
         public static final int withText=0x7f06000c;
@@ -1213,11 +1216,12 @@ containing a value of this type.
         public static final int abc_search_dropdown_item_icons_2line=0x7f030015;
         public static final int abc_search_view=0x7f030016;
         public static final int abc_simple_decor=0x7f030017;
-        public static final int fragment=0x7f030018;
-        public static final int list_element=0x7f030019;
-        public static final int main=0x7f03001a;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001b;
-        public static final int task_detailed=0x7f03001c;
+        public static final int calendar=0x7f030018;
+        public static final int fragment=0x7f030019;
+        public static final int list_element=0x7f03001a;
+        public static final int main=0x7f03001b;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001c;
+        public static final int task_detailed=0x7f03001d;
     }
     public static final class menu {
         public static final int main=0x7f0d0000;
@@ -1266,6 +1270,7 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
+        public static final int action_calendar=0x7f0b0012;
         public static final int action_settings=0x7f0b000e;
         public static final int app_name=0x7f0b000d;
         public static final int text_Room=0x7f0b0011;

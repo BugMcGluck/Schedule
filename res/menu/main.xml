@@ -8,5 +8,9 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_calendar" 
+        android:title="@string/action_calendar" 
+        android:showAsAction="ifRoom" 
+        android:icon="@drawable/ic_action_event"></item>
 
 </menu>

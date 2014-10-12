@@ -26,6 +26,7 @@ import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.util.Log;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -142,10 +143,38 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	}
 
 	@Override
+	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+		super.onActivityResult(arg0, arg1, arg2);
+		if (arg2 == null) {return;}
+		GregorianCalendar calendar = new GregorianCalendar(arg2.getIntExtra("selectedYear", 0), 
+				arg2.getIntExtra("selectedMonth", 0), 
+				arg2.getIntExtra("selectedDay", 0));
+		Date selectedDate = calendar.getTime();
+		Log.d("selectedDate", String.valueOf(arg2.getIntExtra("selectedDay", 0)) + "/" +
+				String.valueOf(arg2.getIntExtra("selectedMonth", 0)) + "/" +
+				String.valueOf(arg2.getIntExtra("selectedYear", 0)));
+		Log.d("selectedDate", selectedDate.toString());
+		int startPosition = 0;
+		for (int i = 0; i < schedules.size(); i++) {
+			if (selectedDate.compareTo(schedules.get(i).date) >= 0){
+				if (selectedDate.compareTo(schedules.get(i).date) == 0){
+					startPosition = i;
+				}else{
+					startPosition = i + 1;
+				}			
+			} else {
+				break;
+			}
+		}
+		pager.setCurrentItem(startPosition);	
+		
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -153,11 +182,16 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		switch (item.getItemId()){
+		case R.id.action_settings:
 			return true;
+		case R.id.action_calendar:
+			Intent intent =  new Intent(this, grischenkomaxim.schedule.Calendar.class);
+			startActivityForResult(intent, 1);
+			return true;
+		default:
+            return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
