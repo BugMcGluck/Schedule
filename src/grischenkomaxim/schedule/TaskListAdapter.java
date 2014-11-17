@@ -57,21 +57,21 @@ public class TaskListAdapter extends BaseAdapter {
 		TextView tv_letter = (TextView) taskView.findViewById(R.id.textLetterIcon);
 
 		
-		String task = it.task.task_type.shortName + " " + it.task.shortName;
-		tv_task.setText(task);
-		String teacher = it.teacher.post.shortName + " " 
-						+ it.teacher.lastName + " "
-						+ it.teacher.firstName.charAt(0) + ". " 
-						+ it.teacher.middleName.charAt(0) + ".";
-		tv_teacher.setText(teacher);
-		String room = "ê." + it.room.building.name + ", à." + it.room.name;
-		tv_room.setText(room);
-		tv_task_start_time.setText(it.task_time.startTime);
-		tv_task_end_time.setText(it.task_time.endTime);
-		String letter = it.task.fullName.substring(0, 1);
+//		String task = it.task.task_type.shortName + " " + it.task.shortName;
+		tv_task.setText(it.getTaskShort());
+//		String teacher = it.teacher.post.shortName + " " 
+//						+ it.teacher.lastName + " "
+//						+ it.teacher.firstName.charAt(0) + ". " 
+//						+ it.teacher.middleName.charAt(0) + ".";
+		tv_teacher.setText(it.getPostShortName() + " " + it.getTeacherShort());
+//		String room = "ê." + it.room.building.name + ", à." + it.room.name;
+		tv_room.setText(it.getRoom());
+		tv_task_start_time.setText(it.getTask_timeStart());
+		tv_task_end_time.setText(it.getTask_timeEnd());
+		String letter = it.getTaskName().substring(0, 1);
 		tv_letter.setText(letter); 
 		for (int i = 0; i < MainActivity.tasks.size(); i++) {
-			if (MainActivity.tasks.get(i).equals(it.task.fullName)){
+			if (MainActivity.tasks.get(i).equals(it.getTaskName())){
 				tv_letter.setBackgroundColor(MainActivity.colors[i]);
 			}
 		}

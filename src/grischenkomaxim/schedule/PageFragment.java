@@ -81,16 +81,16 @@ public class PageFragment extends Fragment {
 //			Log.d("!", "!!!!!!!!!!!!!!!!");
 //			Log.d("!", sh.task.shortName); 
 			
-			String task = sh.task.task_type.shortName + " " + sh.task.shortName;
-			tv_task.setText(task);
-			String teacher = sh.teacher.post.shortName + " " 
-							+ sh.teacher.lastName + " "
-							+ sh.teacher.firstName.charAt(0) + ". " 
-							+ sh.teacher.middleName.charAt(0) + ".";
-			tv_teacher.setText(teacher);
-			tv_room.setText(sh.room.name);
-			tv_task_start_time.setText(sh.task_time.startTime);
-			tv_task_end_time.setText(sh.task_time.endTime);
+//			String task = sh.task.task_type.shortName + " " + sh.task.shortName;
+			tv_task.setText(sh.getTaskShort());
+//			String teacher = sh.teacher.post.shortName + " " 
+//							+ sh.teacher.lastName + " "
+//							+ sh.teacher.firstName.charAt(0) + ". " 
+//							+ sh.teacher.middleName.charAt(0) + ".";
+			tv_teacher.setText(sh.getPostShortName() + " " + sh.getTeacherShort());
+			tv_room.setText(sh.getRoom());
+			tv_task_start_time.setText(sh.getTask_timeStart());
+			tv_task_end_time.setText(sh.getTask_timeEnd());
 			if (changeBackColor)
 			{
 				item.setBackgroundColor(Color.LTGRAY);

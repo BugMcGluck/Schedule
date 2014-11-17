@@ -30,15 +30,15 @@ public class TaskDetailed extends Activity {
 		
 		String s;
 		Item it = MainActivity.schedules.get(pageNumber).schedule.get(position);
-		startTime.setText(it.task_time.startTime);
-		endTime.setText(it.task_time.endTime);
-		s = it.room.name + ", корпус " + it.room.building.name;
-		roomName.setText(s);
-		s = it.task.task_type.fullName + " " + it.task.fullName;
-		taskName.setText(s);
-		s = it.teacher.post.fullName + " " + it.teacher.lastName + " "
-				+it.teacher.firstName + " " + it.teacher.middleName;
-		teacherName.setText(s);
+		startTime.setText(it.getTask_timeStart());
+		endTime.setText(it.getTask_timeEnd());
+//		s = it.room.name + ", корпус " + it.room.building.name;
+		roomName.setText(it.getRoom());
+//		s = it.task.task_type.fullName + " " + it.task.fullName;
+		taskName.setText(it.getTaskFull());
+//		s = it.teacher.post.fullName + " " + it.teacher.lastName + " "
+//				+it.teacher.firstName + " " + it.teacher.middleName;
+		teacherName.setText(it.getPostFullName() + " " + it.getTeacherFull());
 		
 		Date currentDate = GregorianCalendar.getInstance().getTime();
 		GregorianCalendar calendar = new GregorianCalendar();
@@ -57,13 +57,13 @@ public class TaskDetailed extends Activity {
 			SimpleDateFormat sdf = new SimpleDateFormat("hh:mm", new Locale("ru"));
 			Date start = new Date(), end = new Date();
 			try {
-				start = sdf.parse(it.task_time.startTime);
+				start = sdf.parse(it.getTask_timeStart());
 				Log.d("!!StartTime", start.toString());
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			try {
-				end = sdf.parse(it.task_time.endTime);
+				end = sdf.parse(it.getTask_timeEnd());
 				Log.d("!!EndTime", end.toString());
 			} catch (ParseException e) {
 				e.printStackTrace();

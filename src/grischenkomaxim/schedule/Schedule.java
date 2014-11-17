@@ -10,6 +10,18 @@ import android.graphics.Bitmap;
 class Schedule {
 	Date date;
 	List<Item> schedule = new ArrayList<Item>();
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public List<Item> getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(List<Item> schedule) {
+		this.schedule = schedule;
+	}
 }
 
 class Item {
@@ -64,5 +76,107 @@ class Item {
 		String startTime;
 		String endTime;
 		String description;
+	}	
+	
+	public String getTaskFull() {
+		return this.task.task_type.fullName + " " + this.task.fullName;
+	}
+
+	public String getTaskShort() {
+		return this.task.task_type.shortName + " " + this.task.shortName;
+	}
+	
+	public String getTaskName() {
+		return this.task.fullName;
+	}
+		
+	public void setTask(String taskFullName, String taskShortName, String taskTypeFullName, String taskTypeShortName) {
+		this.task.fullName = taskFullName;
+		this.task.shortName = taskShortName;
+		this.task.task_type.fullName = taskTypeFullName;
+		this.task.task_type.shortName = taskTypeShortName;
+	}
+	
+	public String getTeacherFull() { //ФИО полностью
+		if (this.teacher.middleName.isEmpty()){
+			return this.teacher.lastName + " " + this.teacher.firstName;
+		}else{
+			return this.teacher.lastName + " " + this.teacher.firstName + " " + this.teacher.middleName;
+		}
+	}
+	
+	public String getTeacherShort() { //Фамилия и инициалы
+		if (this.teacher.middleName.isEmpty()){
+			return this.teacher.lastName + " " + this.teacher.firstName.charAt(0) + ".";
+		}else{
+			return this.teacher.lastName + " " + this.teacher.firstName.charAt(0) + ". " + this.teacher.middleName.charAt(0) + ".";
+		}
+	}
+
+	public void setTeacher(String teacherFirstName, String teacherLastName, String teacherMiddleName, String postFullName, String postShortName, Bitmap teacherPhoto) {
+		this.teacher.firstName = teacherFirstName;
+		this.teacher.lastName = teacherLastName;
+		this.teacher.middleName = teacherMiddleName;
+		this.teacher.post.fullName = postFullName;
+		this.teacher.post.shortName = postShortName;
+		this.teacher.photo = teacherPhoto;
+	}
+
+	public String getPostFullName(){
+		return this.teacher.post.fullName;
+	}
+	
+	public String getPostShortName(){
+		return this.teacher.post.shortName;
+	}
+	
+	public String getRoom() {
+		return "ауд." + this.room.name + ", корп." + this.room.building.name;
+	}
+
+	public void setRoom(String roomName, String buildingName, String buildingGeo, Bitmap buildingPhoto) {
+		this.room.name = roomName;
+		this.room.building.name = buildingName;
+		this.room.building.geo = buildingGeo;
+		this.room.building.photo = buildingPhoto;
+	}
+
+	public String getClassFullName() {
+		return this.clas.fullName;
+	}
+	
+	public String getClassShortName() {
+		return this.clas.shortName;
+	}
+
+	public void setClass(String classFullName, String classShortName) {
+		this.clas.fullName = classFullName;
+		this.clas.shortName = classShortName;
+	}
+
+	public String getTask_timeStart() {
+		return this.task_time.startTime;
+	}
+	
+	public String getTask_timeEnd() {
+		return this.task_time.endTime;
+	}
+
+	public String getTask_timeDescription() {
+		return this.task_time.description;
+	}
+	
+	public void setTask_time(String start, String end, String description) {
+		this.task_time.startTime = start;
+		this.task_time.endTime = end;
+		this.task_time.description = description;
+	}
+
+	public Calendar getDay() {
+		return day;
+	}
+
+	public void setDay(Calendar day) {
+		this.day = day;
 	}
 }

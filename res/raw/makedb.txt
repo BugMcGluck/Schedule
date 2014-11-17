@@ -72,9 +72,15 @@ insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), '2-11
 insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '2-21');
 insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '2-37');
 insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), 'кафедра АСОИ');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-14');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '4-14');
 insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-7');
 insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-14');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-19');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), '2-25');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-2');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-24');
+insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '1-07');
+
 
 INSERT INTO Task_type VALUES (null, 'лекция', 'лек.');
 INSERT INTO Task_type VALUES (null, 'практические занятия', 'практ.');
@@ -151,29 +157,29 @@ INSERT INTO Schedule VALUES (null, 14, 6, 8, 1, 6, '2014-10-10', 1, '2014-04-12 
 INSERT INTO Schedule VALUES (null, 5, 7, 2, 1, 4, '2014-10-11', 1, '2014-04-12 01:11:11:000');
 INSERT INTO Schedule VALUES (null, 5, 7, 2, 1, 5, '2014-10-11', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 11, null, 5, 1, 7, '2014-10-13', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 6, null, 2, 1, 4, '2014-10-13', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 2, null, 1, 1, 5, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 11, 8, 5, 1, 7, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 6, 4, 2, 1, 4, '2014-10-13', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 2, 4, 1, 1, 5, '2014-10-13', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 13, null, 3, 1, 3, '2014-10-14', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 4, '2014-10-14', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 13, 4, 3, 1, 3, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, 9, 3, 1, 4, '2014-10-14', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, 9, 3, 1, 5, '2014-10-14', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 3, null, 1, 1, 7, '2014-10-15', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-15', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 5, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 3, 9, 1, 1, 7, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, 10, 1, 1, 4, '2014-10-15', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, 11, 8, 1, 5, '2014-10-15', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 4, null, 1, 1, 7, '2014-10-16', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-16', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 5, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 4, 4, 1, 1, 7, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, 12, 1, 1, 4, '2014-10-16', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, 12, 1, 1, 5, '2014-10-16', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 7, null, 2, 1, 7, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, null, 1, 1, 4, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 5, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, null, 8, 1, 6, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 7, 1, 2, 1, 7, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 15, 9, 1, 1, 4, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, 9, 8, 1, 5, '2014-10-17', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 14, 9, 8, 1, 6, '2014-10-17', 1, '2014-04-12 01:11:11:000');
 
-INSERT INTO Schedule VALUES (null, 13, null, 3, 1, 3, '2014-10-18', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 4, '2014-10-18', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, null, 3, 1, 5, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 13, 4, 3, 1, 3, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, 5, 3, 1, 4, '2014-10-18', 1, '2014-04-12 01:11:11:000');
+INSERT INTO Schedule VALUES (null, 12, 5, 3, 1, 5, '2014-10-18', 1, '2014-04-12 01:11:11:000');
 
 

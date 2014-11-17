@@ -229,39 +229,15 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				do {
 					Item item = new Item();
 
-					item.clas.fullName = c.getString(c
-							.getColumnIndex("ClassFullName"));
-					item.clas.shortName = c.getString(c
-							.getColumnIndex("ClassShortName"));
-					item.room.name = c.getString(c.getColumnIndex("RoomName"));
-					item.room.building.name = c.getString(c
-							.getColumnIndex("BuidingName"));
-					item.room.building.geo = c.getString(c
-							.getColumnIndex("BuildingGeo"));
-
-					item.task.fullName = c.getString(c
-							.getColumnIndex("TaskFullName"));
-					item.task.shortName = c.getString(c
-							.getColumnIndex("TaskShortName"));
-					item.task.task_type.fullName = c.getString(c
-							.getColumnIndex("Task_typeFullName"));
-					item.task.task_type.shortName = c.getString(c
-							.getColumnIndex("Task_typeShortName"));
-					item.teacher.firstName = c.getString(c
-							.getColumnIndex("TeacherFirstName"));
-					item.teacher.lastName = c.getString(c
-							.getColumnIndex("TeacherLastName"));
-					item.teacher.middleName = c.getString(c
-							.getColumnIndex("TeacherMiddleName"));
-					item.teacher.post.fullName = c.getString(c
-							.getColumnIndex("PostFullName"));
-					item.teacher.post.shortName = c.getString(c
-							.getColumnIndex("PostShortName"));
-					item.task_time.startTime = c.getString(c
-							.getColumnIndex("Task_timeStartTime"));
-					item.task_time.endTime = c.getString(c
-							.getColumnIndex("Task_timeEndTime"));
-					
+					item.setClass(c.getString(c.getColumnIndex("ClassFullName")), c.getString(c.getColumnIndex("ClassShortName")));
+					item.setRoom(c.getString(c.getColumnIndex("RoomName")), c.getString(c.getColumnIndex("BuidingName")), 
+							c.getString(c.getColumnIndex("BuildingGeo")), null);
+					item.setTask(c.getString(c.getColumnIndex("TaskFullName")), c.getString(c.getColumnIndex("TaskShortName")),
+							c.getString(c.getColumnIndex("Task_typeFullName")), c.getString(c.getColumnIndex("Task_typeShortName")));
+					item.setTeacher(c.getString(c.getColumnIndex("TeacherFirstName")), c.getString(c.getColumnIndex("TeacherLastName")),
+							c.getString(c.getColumnIndex("TeacherMiddleName")), c.getString(c.getColumnIndex("PostFullName")),
+							c.getString(c.getColumnIndex("PostShortName")), null);
+					item.setTask_time(c.getString(c.getColumnIndex("Task_timeStartTime")), c.getString(c.getColumnIndex("Task_timeEndTime")), null);
 					sh.schedule.add(item);
 				} while (c.moveToNext());
 				schedules.set(pos, sh);
