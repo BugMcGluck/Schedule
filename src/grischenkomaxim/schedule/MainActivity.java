@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.R.color;
 import android.support.v4.app.Fragment;
@@ -25,6 +28,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.util.Log;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -77,8 +81,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 		dbHelper = new DBHelper(this);
 //		maxDate = getScheduleLastDate();
-		FillDates();
-		FillTasks();
+		fillDates();
+		fillTasks();
 //		Log.d("!!!MAXDATE", maxDate.toString());
 		
 		pager = (ViewPager) findViewById(R.id.pager);
@@ -248,37 +252,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		dbHelper.close();
 	}
 
-	private Cursor getCursorByDate(String date, DBHelper dbHelper) {
-		db = dbHelper.getWritableDatabase();
-		String sqlQuery = "select class.fullname as ClassFullName, "
-				+ "class.shortname as ClassShortName, "
-				+ "room.name as RoomName, "
-				+ "building.name as BuidingName, building.geo as BuildingGeo, "
-				+ "building.photo as BuildingPhoto, "
-				+ "task_type.fullname as Task_typeFullName, "
-				+ "task_type.shortname as Task_typeShortName, task.fullname as TaskFullName, "
-				+ "task.shortname as TaskShortName, task_time.starttime as Task_timeStartTime, "
-				+ "task_time.endtime as Task_timeEndTime, task_time.description as Task_timeDescription, "
-				+ "post.fullname as PostFullName, post.shortname as PostShortName, "
-				+ "teacher.firstname as TeacherFirstName, teacher.lastname as TeacherLastName, "
-				+ "teacher.middlename as TeacherMiddleName, teacher.photo as TeacherPhoto, "
-				+ "schedule.day as ScheduleDay "
-				+ "from schedule "
-				+ "left join task on schedule.task_id = task.id "
-				+ "left join room on schedule.room_id = room.id "
-				+ "left join teacher on schedule.teacher_id = teacher.id "
-				+ "left join class on schedule.class_id = class.id "
-				+ "left join task_time on schedule.task_time_id = task_time.id "
-				+ "left join building on room.building_id = building.id "
-				+ "left join task_type on task.task_type_id = task_type.id "
-				+ "left join post on teacher.post_id = post.id "
-				+ "where schedule.is_active = 1 " + "and schedule.day = ?;";
-		Cursor c = null;
-		c = db.rawQuery(sqlQuery, new String[] { date });
-		return c;
-	}
-
-/*	private Date getScheduleLastDate() {
+	/*	private Date getScheduleLastDate() {
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select max(day) from schedule where is_active = 1;";
 		Cursor c = null;
@@ -304,8 +278,94 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 		return null;
 	}*/
+	
+	private void parseXML(){
+		saveSchedule();
+	}
+	
+	private void saveSchedule() {
+		List<ContentValues> tableClass = new ArrayList<ContentValues>();
+		List<ContentValues> tableRoom = new ArrayList<ContentValues>();
+		List<ContentValues> tableBuilding = new ArrayList<ContentValues>();
+		List<ContentValues> tableTask = new ArrayList<ContentValues>();
+		List<ContentValues> tabletaskType = new ArrayList<ContentValues>();
+		List<ContentValues> tableTaskTime = new ArrayList<ContentValues>();
+		List<ContentValues> tablePost = new ArrayList<ContentValues>();
+		List<ContentValues> tableTeacher = new ArrayList<ContentValues>();
+		List<ContentValues> tableSchedule = new ArrayList<ContentValues>();
+		saveTable(tableClass);
+		saveTable(tableRoom);
+		saveTable(tableBuilding);
+		saveTable(tableTask);
+		saveTable(tabletaskType);
+		saveTable(tableTaskTime);
+		saveTable(tablePost);
+		saveTable(tableTeacher);
+		saveTable(tableSchedule);
+	}
+	
 
-	private void FillDates(){
+	private void saveTable(List<ContentValues> table) {
+		db = dbHelper.getWritableDatabase();
+		for (ContentValues map : table) {
+			Cursor c = null;
+			if("Schedule".equals(map.get("table"))){	//Проверяем наличие такой-же записи
+				c = db.query( map.getAsString("table")
+						, null
+						, "Class_id = ? and Task_time_id = ? and Day = ? and Is_active = 1"
+						, new String [] {map.getAsString("Class_id"), map.getAsString("Task_time_id"), map.getAsString("Day")}
+						, null
+						, null,
+						null);
+			
+				if(c.getCount()>0){	//Если есть такая запись, то проставляем ей is_active=0
+					ContentValues isActive =  new ContentValues();
+					isActive.put("id", c.getInt(c.getColumnIndex("id")));
+					isActive.put("Task_id", c.getInt(c.getColumnIndex("Task_id")));
+					isActive.put("Room_id", c.getInt(c.getColumnIndex("Room_id")));
+					isActive.put("Teacher_id", c.getInt(c.getColumnIndex("Teacher_id")));
+					isActive.put("Class_id", c.getInt(c.getColumnIndex("Class_id")));
+					isActive.put("Task_time_id", c.getInt(c.getColumnIndex("Task_time_id")));
+					isActive.put("Day", c.getString(c.getColumnIndex("Day")));
+					isActive.put("Last_update", c.getString(c.getColumnIndex("Last_update")));
+					isActive.put("Is_active", "0");
+					db.update("Schedule", isActive, "id = ?", new String [] {map.getAsString("id")});
+				}
+			}
+			db.insert(map.getAsString("table"), null, map);
+		}
+	}
+
+	private Cursor getCursorByDate(String date, DBHelper dbHelper) {
+		String sqlQuery = "select class.fullname as ClassFullName, "
+				+ "class.shortname as ClassShortName, "
+				+ "room.name as RoomName, "
+				+ "building.name as BuidingName, building.geo as BuildingGeo, "
+				+ "building.photo as BuildingPhoto, "
+				+ "task_type.fullname as Task_typeFullName, "
+				+ "task_type.shortname as Task_typeShortName, task.fullname as TaskFullName, "
+				+ "task.shortname as TaskShortName, task_time.starttime as Task_timeStartTime, "
+				+ "task_time.endtime as Task_timeEndTime, task_time.description as Task_timeDescription, "
+				+ "post.fullname as PostFullName, post.shortname as PostShortName, "
+				+ "teacher.firstname as TeacherFirstName, teacher.lastname as TeacherLastName, "
+				+ "teacher.middlename as TeacherMiddleName, teacher.photo as TeacherPhoto, "
+				+ "schedule.day as ScheduleDay "
+				+ "from schedule "
+				+ "left join task on schedule.task_id = task.id "
+				+ "left join room on schedule.room_id = room.id "
+				+ "left join teacher on schedule.teacher_id = teacher.id "
+				+ "left join class on schedule.class_id = class.id "
+				+ "left join task_time on schedule.task_time_id = task_time.id "
+				+ "left join building on room.building_id = building.id "
+				+ "left join task_type on task.task_type_id = task_type.id "
+				+ "left join post on teacher.post_id = post.id "
+				+ "where schedule.is_active = 1 " + "and schedule.day = ?;";
+		Cursor c = null;
+		c = dbHelper.getWritableDatabase().rawQuery(sqlQuery, new String[] { date });
+		return c;
+	}
+
+private void fillDates(){
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select distinct day from schedule where is_active = 1;";
 		schedules.clear();
@@ -328,9 +388,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			}
 		}
 		c.close();
+		db.close();
 	}
 	
-	private void FillTasks(){
+	private void fillTasks(){
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select distinct fullname from task;";
 		tasks.clear();
@@ -344,6 +405,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			}
 		}
 		c.close();
+		db.close();
 	}
 	
 	/*
