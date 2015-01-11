@@ -50,6 +50,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 	DBHelper dbHelper;
 	SQLiteDatabase db;
+	private static final String DBNAME = "myDB.db";
 	public static List<Schedule> schedules = new ArrayList<Schedule>();
 //	GregorianCalendar calendar = new GregorianCalendar();
 //	Date date = calendar.getTime();
@@ -79,7 +80,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		dbHelper = new DBHelper(this);
+		dbHelper = new DBHelper(this, DBNAME);
 //		maxDate = getScheduleLastDate();
 		fillDates();
 		fillTasks();
@@ -435,11 +436,10 @@ private void fillDates(){
 
 	class DBHelper extends SQLiteOpenHelper {
 
-		private static final String DB = "myDB.db";
-
-		public DBHelper(Context context) {
+		
+		public DBHelper(Context context, String dbName) {
 			// конструктор суперкласса
-			super(context, DB, null, 1);
+			super(context, dbName, null, 1);
 		}
 
 		@Override
@@ -450,16 +450,13 @@ private void fillDates(){
 			try {
 				is.read(buffer);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			String sql = new String(buffer);
-			Log.d("!!!SQLString", sql);
 			db.beginTransaction();
 			int index = 0;
 			while ((index = sql.indexOf(";")) != -1){
 				String s = sql.substring(0, index);
-				Log.d("!!!SQLString", s); 
 				db.execSQL(s);
 				sql = sql.substring(index + 1);
 			}
