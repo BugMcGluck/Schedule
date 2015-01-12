@@ -366,12 +366,27 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return c;
 	}
 
-private void fillDates(){
+	private void getSchedulesList(){
+		String sqlQuery = "select t.Id AS Id, t.LastName ||' '|| t.FirstName ||' '||t.MiddleName AS Name "
+				+"from teacher t "
+				+"union "
+				+"select c.Id AS Id, c.FullName AS Name from class c;"; // добавить условие hasSchedule =1
+		Cursor c = dbHelper.getReadableDatabase().rawQuery(sqlQuery, null);
+		
+	}
+	
+	
+	private Date getLastUpdate(){
+		return null;
+		
+	}
+	
+	private void fillDates(){
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery = "select distinct day from schedule where is_active = 1;";
 		schedules.clear();
 		Cursor c = null;
-		c = db.rawQuery(sqlQuery, null);
+		c = db.rawQuery(sqlQuery, null); //c = db.query("Schedule", new String[] {"Day"}, null, null, groupBy, having, orderBy);
 		if (c != null) {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd", new Locale("ru"));
