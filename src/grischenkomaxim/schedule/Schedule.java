@@ -37,7 +37,7 @@ class Item {
 		String firstName;
 		String middleName;
 		Post post = new Post();
-		Bitmap photo;
+		//Bitmap photo;
 	}
 
 	class Post {
@@ -64,12 +64,16 @@ class Item {
 	class Building {
 		String name;
 		String geo;
-		Bitmap photo;
+		//Bitmap photo;
+		String address;
 	}
 
 	class Class {
 		String fullName;
 		String shortName;
+		String faculty;
+		String eduOrg;
+		String city;
 	}
 
 	class Task_time {
@@ -113,13 +117,12 @@ class Item {
 		}
 	}
 
-	public void setTeacher(String teacherFirstName, String teacherLastName, String teacherMiddleName, String postFullName, String postShortName, Bitmap teacherPhoto) {
+	public void setTeacher(String teacherFirstName, String teacherLastName, String teacherMiddleName, String postFullName, String postShortName) {
 		this.teacher.firstName = teacherFirstName;
 		this.teacher.lastName = teacherLastName;
 		this.teacher.middleName = teacherMiddleName;
 		this.teacher.post.fullName = postFullName;
 		this.teacher.post.shortName = postShortName;
-		this.teacher.photo = teacherPhoto;
 	}
 
 	public String getPostFullName(){
@@ -134,11 +137,11 @@ class Item {
 		return "ауд." + this.room.name + ", корп." + this.room.building.name;
 	}
 
-	public void setRoom(String roomName, String buildingName, String buildingGeo, Bitmap buildingPhoto) {
+	public void setRoom(String roomName, String buildingName, String buildingGeo, String buildingAddress) {
 		this.room.name = roomName;
 		this.room.building.name = buildingName;
 		this.room.building.geo = buildingGeo;
-		this.room.building.photo = buildingPhoto;
+		this.room.building.address = buildingAddress;
 	}
 
 	public String getClassFullName() {

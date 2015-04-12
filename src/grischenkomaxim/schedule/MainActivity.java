@@ -50,7 +50,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 	DBHelper dbHelper;
 	SQLiteDatabase db;
-	private static final String DBNAME = "myDB.db";
+	private static final String DBNAME = "mydb.db";
 	public static List<Schedule> schedules = new ArrayList<Schedule>();
 //	GregorianCalendar calendar = new GregorianCalendar();
 //	Date date = calendar.getTime();
@@ -65,6 +65,17 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		Color.LTGRAY
 	};
 	public static List<String> tasks = new ArrayList<String>();
+	
+	public class scheduleListItem{
+		public scheduleListItem(int _id, String _name) {
+			id = _id;
+			name = _name;
+		}
+		int id;
+		String name;
+	}
+	public static List<scheduleListItem> schedulesList = new ArrayList<scheduleListItem>();
+	public Integer currentSchedule = 1;
 	
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
@@ -148,29 +159,42 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	}
 
 	@Override
-	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
-		super.onActivityResult(arg0, arg1, arg2);
-		if (arg2 == null) {return;}
-//		GregorianCalendar calendar = new GregorianCalendar(arg2.getIntExtra("selectedYear", 0), 
-//				arg2.getIntExtra("selectedMonth", 0), 
-//				arg2.getIntExtra("selectedDay", 0));
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (data == null) {
+			return;
+		}
+		// GregorianCalendar calendar = new
+		// GregorianCalendar(arg2.getIntExtra("selectedYear", 0),
+		// arg2.getIntExtra("selectedMonth", 0),
+		// arg2.getIntExtra("selectedDay", 0));
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+			case 1:
+				Date selectedDate = new Date(data.getLongExtra("selectedDate",
+						0));
 
-		Date selectedDate = new Date(arg2.getLongExtra("selectedDate", 0));
+				int startPosition = 0;
+				for (int i = 0; i < schedules.size(); i++) {
+					if (selectedDate.compareTo(schedules.get(i).date) >= 0) {
+						if (selectedDate.compareTo(schedules.get(i).date) == 0) {
+							startPosition = i;
+						} else {
+							startPosition = i + 1;
+						}
+					} else {
+						break;
+					}
+				}
+				pager.setCurrentItem(startPosition);
+				break;
 
-		int startPosition = 0;
-		for (int i = 0; i < schedules.size(); i++) {
-			if (selectedDate.compareTo(schedules.get(i).date) >= 0){
-				if (selectedDate.compareTo(schedules.get(i).date) == 0){
-					startPosition = i;
-				}else{
-					startPosition = i + 1;
-				}			
-			} else {
+			case 2:
+				currentSchedule = data.getIntExtra("selectedschedule", 0);
+				fillDates();
 				break;
 			}
 		}
-		pager.setCurrentItem(startPosition);	
-		
 	}
 
 	@Override
@@ -189,8 +213,13 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		case R.id.action_settings:
 			return true;
 		case R.id.action_calendar:
-			Intent intent =  new Intent(this, grischenkomaxim.schedule.Calendar.class);
-			startActivityForResult(intent, 1);
+			Intent calendarIntent =  new Intent(this, grischenkomaxim.schedule.Calendar.class);
+			startActivityForResult(calendarIntent, 1);
+			return true;
+		case R.id.action_list:
+			getSchedulesList();
+			Intent schedulesListIntent = new Intent(this, ClassList.class);
+			startActivityForResult(schedulesListIntent, 2);
 			return true;
 		default:
             return super.onOptionsItemSelected(item);
@@ -241,7 +270,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 							c.getString(c.getColumnIndex("Task_typeFullName")), c.getString(c.getColumnIndex("Task_typeShortName")));
 					item.setTeacher(c.getString(c.getColumnIndex("TeacherFirstName")), c.getString(c.getColumnIndex("TeacherLastName")),
 							c.getString(c.getColumnIndex("TeacherMiddleName")), c.getString(c.getColumnIndex("PostFullName")),
-							c.getString(c.getColumnIndex("PostShortName")), null);
+							c.getString(c.getColumnIndex("PostShortName")));
 					item.setTask_time(c.getString(c.getColumnIndex("Task_timeStartTime")), c.getString(c.getColumnIndex("Task_timeEndTime")), null);
 					sh.schedule.add(item);
 				} while (c.moveToNext());
@@ -342,14 +371,14 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				+ "class.shortname as ClassShortName, "
 				+ "room.name as RoomName, "
 				+ "building.name as BuidingName, building.geo as BuildingGeo, "
-				+ "building.photo as BuildingPhoto, "
+				+ "building.address as BuildingSddress, "
 				+ "task_type.fullname as Task_typeFullName, "
 				+ "task_type.shortname as Task_typeShortName, task.fullname as TaskFullName, "
 				+ "task.shortname as TaskShortName, task_time.starttime as Task_timeStartTime, "
 				+ "task_time.endtime as Task_timeEndTime, task_time.description as Task_timeDescription, "
 				+ "post.fullname as PostFullName, post.shortname as PostShortName, "
 				+ "teacher.firstname as TeacherFirstName, teacher.lastname as TeacherLastName, "
-				+ "teacher.middlename as TeacherMiddleName, teacher.photo as TeacherPhoto, "
+				+ "teacher.middlename as TeacherMiddleName, "
 				+ "schedule.day as ScheduleDay "
 				+ "from schedule "
 				+ "left join task on schedule.task_id = task.id "
@@ -360,19 +389,27 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				+ "left join building on room.building_id = building.id "
 				+ "left join task_type on task.task_type_id = task_type.id "
 				+ "left join post on teacher.post_id = post.id "
-				+ "where schedule.is_active = 1 " + "and schedule.day = ?;";
+				+ "where schedule.Class_id = ? " + "and schedule.day = ?;";
 		Cursor c = null;
-		c = dbHelper.getWritableDatabase().rawQuery(sqlQuery, new String[] { date });
+		c = dbHelper.getWritableDatabase().rawQuery(sqlQuery, new String[] { currentSchedule.toString(), date });
 		return c;
 	}
 
 	private void getSchedulesList(){
 		String sqlQuery = "select t.Id AS Id, t.LastName ||' '|| t.FirstName ||' '||t.MiddleName AS Name "
 				+"from teacher t "
+				+"where t.hasSchedule = 1 "
 				+"union "
-				+"select c.Id AS Id, c.FullName AS Name from class c;"; // добавить условие hasSchedule =1
+				+"select c.Id AS Id, c.FullName AS Name from class c"
+				+"where t.hasSchedule = 1;"; 
 		Cursor c = dbHelper.getReadableDatabase().rawQuery(sqlQuery, null);
-		
+		if (c != null) {
+			if (c.moveToFirst()){
+				do {
+					schedulesList.add(new scheduleListItem(c.getInt(0), c.getString(1)));
+				}while (c.moveToNext());
+			}
+		}
 	}
 	
 	
@@ -383,10 +420,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	
 	private void fillDates(){
 		db = dbHelper.getWritableDatabase();
-		String sqlQuery = "select distinct day from schedule where is_active = 1;";
+		String sqlQuery = "select distinct day from schedule where class_id = ?;";
 		schedules.clear();
 		Cursor c = null;
-		c = db.rawQuery(sqlQuery, null); //c = db.query("Schedule", new String[] {"Day"}, null, null, groupBy, having, orderBy);
+		c = db.rawQuery(sqlQuery, new String[] {currentSchedule.toString()}); //c = db.query("Schedule", new String[] {"Day"}, null, null, groupBy, having, orderBy);
 		if (c != null) {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd", new Locale("ru"));
@@ -461,7 +498,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		public void onCreate(SQLiteDatabase db) {
 			InputStream is = null;
 			is = getResources().openRawResource(R.raw.makedb);
-			byte[] buffer = new byte[20000];
+			byte[] buffer = new byte[50000];
 			try {
 				is.read(buffer);
 			} catch (IOException e) {

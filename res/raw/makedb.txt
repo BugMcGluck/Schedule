@@ -1,185 +1,625 @@
-CREATE TABLE Class(
-  id Integer NOT NULL PRIMARY KEY,
-  FullName Varchar2(200 ) NOT NULL,
-  ShortName Varchar2(10 ) NOT NULL
-);
-CREATE TABLE Room(
-  id Integer NOT NULL PRIMARY KEY,
-  Building_id Integer NOT NULL,
-  Name Varchar2(10 ) NOT NULL
-);
-CREATE TABLE Building(
-  id Integer NOT NULL PRIMARY KEY,
-  Name Varchar2(10 ) NOT NULL,
-  Geo Varchar2(50 ),
-  Photo Long raw
-);
-CREATE TABLE Task_type(
-  id Integer NOT NULL PRIMARY KEY,
-  FullName Varchar2(50 ) NOT NULL,
-  ShortName Varchar2(10 ) NOT NULL
-);
-CREATE TABLE Task(
-  id Integer NOT NULL PRIMARY KEY,
-  Task_type_id Integer NOT NULL,
-  FullName Varchar2(100 ) NOT NULL,
-  ShortName Varchar2(30 ) NOT NULL
-);
-CREATE TABLE Task_time(
-  id Integer NOT NULL PRIMARY KEY,
-  StartTime Date NOT NULL,
-  EndTime Date,
-  Description Varchar2(200 )
-);
-CREATE TABLE Post(
-  id Integer NOT NULL PRIMARY KEY,
-  FullName Varchar2(100 ) NOT NULL,
-  ShortName Varchar2(100 ) NOT NULL
-);
-CREATE TABLE Teacher(
-  id Integer NOT NULL PRIMARY KEY,
-  LastName Varchar2(60 ) NOT NULL,
-  FirstName Varchar2(60 ) NOT NULL,
-  MiddleName Varchar2(60 ),
-  Post_id Integer,
-  Photo Long raw
-);
-CREATE TABLE Schedule(
-  id Integer NOT NULL PRIMARY KEY,
-  Task_id Integer NOT NULL,
-  Room_id Integer,
-  Teacher_id Integer NOT NULL,
-  Class_id Integer NOT NULL,
-  Task_time_id Integer NOT NULL,
-  Day Date NOT NULL,
-  Is_active Number(1,0) NOT NULL,
-  Last_update Text NOT NULL
-);
-
-
-
-
-
-insert into Class values (null, 'АСОИ 62', 'АС-62');
-
-insert into Building values (null, '1', null, null);
-insert into Building values (null, '2', null, null);
-insert into Building values (null, '3', null, null);
-insert into Building values (null, '4', null, null);
-insert into Building values (null, '5', null, null);
-
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), '2-11');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '2-21');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '2-37');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), 'кафедра АСОИ');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '3'), '4-14');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-7');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-14');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-19');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '5'), '2-25');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '5-2');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '4-24');
-insert into Room values (null, (SELECT id FROM Building WHERE Name = '4'), '1-07');
-
-
-INSERT INTO Task_type VALUES (null, 'лекция', 'лек.');
-INSERT INTO Task_type VALUES (null, 'практические занятия', 'практ.');
-INSERT INTO Task_type VALUES (null, 'лабораторная работа', 'лаб.');
-INSERT INTO Task_type VALUES (null, 'контрольная работа', 'контр.');
-INSERT INTO Task_type VALUES (null, 'зачёт', 'зач.');
-INSERT INTO Task_type VALUES (null, 'экзамен', 'экз.');
-INSERT INTO Task_type VALUES (null, 'защита курсового проекта', 'защ.');
-
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Проектирование  систем обработки данных', 'ПСОД');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Проектирование  систем обработки данных', 'ПСОД');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'зачёт'), 'Проектирование  систем обработки данных', 'ПСОД');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'защита курсового проекта'), 'Проектирование  систем обработки данных', 'ПСОД');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Надежность функционирования АСУ', 'Над. функц. АСУ');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Защита компьютерных сетей и систем', 'Защита КСиС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'контрольная работа'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'экзамен'), 'Аппаратное и программное обеспечение ЭВМ и сетей', 'АПОС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Диагностика и обслуживание сетей', 'ДиОС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'практические занятия'), 'Диагностика и обслуживание сетей', 'ДиОС');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Информационные технологии и психология управления', 'ИТиПУ');
-INSERT INTO Task VALUES (null, (SELECT id FROM Task_type WHERE FullName = 'лекция'), 'Бизнес технологии в Internet', 'БТ в Internet');
-
-INSERT INTO Task_time VALUES (null, '8:20', '09:55', '1-я пара');
-INSERT INTO Task_time VALUES (null, '10:10', '11:45', '2-я пара');
-INSERT INTO Task_time VALUES (null, '12:05', '13:40', '3-я пара');
-INSERT INTO Task_time VALUES (null, '14:10', '15:45', '4-я пара');
-INSERT INTO Task_time VALUES (null, '15:55', '17:30', '5-я пара');
-INSERT INTO Task_time VALUES (null, '17:40', '19:15', '6-я пара');
-INSERT INTO Task_time VALUES (null, '8:20', null, 'экзамен/зачёт');
-
-INSERT INTO Post VALUES (null, 'преподаватель', 'преп.');
-INSERT INTO Post VALUES (null, 'старший преподаватель', 'ст. преп.');
-INSERT INTO Post VALUES (null, 'ассистент', 'ас.');
-INSERT INTO Post VALUES (null, 'лаборант', 'лаб.');
-INSERT INTO Post VALUES (null, 'доцент', 'доц.');
-INSERT INTO Post VALUES (null, 'професор', 'проф.');
-INSERT INTO Post VALUES (null, 'академик', 'акад.');
-
-INSERT INTO Teacher VALUES (null, 'Чечет', 'Павел', 'Леонидович', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
-INSERT INTO Teacher VALUES (null, 'Шаповалова', 'Наталья', 'Александровна', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
-INSERT INTO Teacher VALUES (null, 'Кулинченко', 'Владимир', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
-INSERT INTO Teacher VALUES (null, 'Кучеров', 'Александр', 'Иванович', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
-INSERT INTO Teacher VALUES (null, 'Воруев', 'Андрей', 'Валерьевич', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
-INSERT INTO Teacher VALUES (null, 'Крайников', 'Александр', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'лаборант'),null);
-INSERT INTO Teacher VALUES (null, 'Левчук', 'Виктор', 'Дмитриевич', (SELECT id FROM Post WHERE FullName = 'доцент'),null);
-INSERT INTO Teacher VALUES (null, 'Леванцов', 'Виктор', 'Николаевич', (SELECT id FROM Post WHERE FullName = 'старший преподаватель'),null);
-
-INSERT INTO Schedule VALUES (null, 1, 1, 1, 1, 4, '2014-10-06', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 1, 1, 1, 1, 5, '2014-10-06', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 5, 1, 2, 1, 6, '2014-10-06', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 9, 4, 5, 1, 2, '2014-10-07', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 1, 2, 1, 1, 4, '2014-10-07', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 2, 3, 1, 5, '2014-10-07', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 2, 3, 1, 6, '2014-10-07', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 8, 2, 4, 1, 7, '2014-10-08', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 5, 3, 2, 1, 4, '2014-10-08', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 5, 3, 2, 1, 5, '2014-10-08', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 6, 4, 2, 1, 6, '2014-10-08', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 12, 3, 3, 1, 4, '2014-10-09', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 3, 3, 1, 5, '2014-10-09', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 10, 4, 5, 1, 6, '2014-10-09', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 10, 4, 5, 1, 3, '2014-10-10', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 2, 4, 1, 1, 4, '2014-10-10', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, 6, 8, 1, 5, '2014-10-10', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, 6, 8, 1, 6, '2014-10-10', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 5, 7, 2, 1, 4, '2014-10-11', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 5, 7, 2, 1, 5, '2014-10-11', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 11, 8, 5, 1, 7, '2014-10-13', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 6, 4, 2, 1, 4, '2014-10-13', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 2, 4, 1, 1, 5, '2014-10-13', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 13, 4, 3, 1, 3, '2014-10-14', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 9, 3, 1, 4, '2014-10-14', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 9, 3, 1, 5, '2014-10-14', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 3, 9, 1, 1, 7, '2014-10-15', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, 10, 1, 1, 4, '2014-10-15', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, 11, 8, 1, 5, '2014-10-15', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 4, 4, 1, 1, 7, '2014-10-16', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, 12, 1, 1, 4, '2014-10-16', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, 12, 1, 1, 5, '2014-10-16', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 7, 1, 2, 1, 7, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 15, 9, 1, 1, 4, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, 9, 8, 1, 5, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 14, 9, 8, 1, 6, '2014-10-17', 1, '2014-04-12 01:11:11:000');
-
-INSERT INTO Schedule VALUES (null, 13, 4, 3, 1, 3, '2014-10-18', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 5, 3, 1, 4, '2014-10-18', 1, '2014-04-12 01:11:11:000');
-INSERT INTO Schedule VALUES (null, 12, 5, 3, 1, 5, '2014-10-18', 1, '2014-04-12 01:11:11:000');
-
-
+CREATE TABLE Task_type(  Id          Integer      NOT NULL PRIMARY KEY,  FullName    Varchar(50)  NOT NULL,  ShortName   Varchar(10)  NOT NULL);
+INSERT INTO "Task_type" VALUES(1,'лекция','лек.');
+INSERT INTO "Task_type" VALUES(2,'практические занятия','практ.');
+INSERT INTO "Task_type" VALUES(3,'лабораторная работа','лаб.');
+CREATE TABLE Task_time(  Id          Integer      NOT NULL PRIMARY KEY,  StartTime   Varchar(10)  NOT NULL,  EndTime     Varchar(10),  Description Varchar(100));
+INSERT INTO "Task_time" VALUES(1,'8:20','9:55','1-я пара');
+INSERT INTO "Task_time" VALUES(2,'10:10','11:45','2-я пара');
+INSERT INTO "Task_time" VALUES(3,'12:05','13:40','3-я пара');
+INSERT INTO "Task_time" VALUES(4,'14:10','15:45','4-я пара');
+INSERT INTO "Task_time" VALUES(5,'15:55','17:30','5-я пара');
+INSERT INTO "Task_time" VALUES(6,'17:40','19:15','6-я пара');
+CREATE TABLE Post(  Id          Integer      NOT NULL PRIMARY KEY,  FullName    Varchar(100) NOT NULL,  ShortName   Varchar(10)  NOT NULL);
+INSERT INTO "Post" VALUES(1,'преподаватель','преп.');
+INSERT INTO "Post" VALUES(2,'старший преподаватель','ст.преп.');
+INSERT INTO "Post" VALUES(3,'доцент','доц.');
+CREATE TABLE "Class" ("Id" INTEGER PRIMARY KEY NOT NULL, "FullName" VARCHAR(200) NOT NULL, "ShortName" VARCHAR(10) NOT NULL, "Faculty" VARCHAR(50) NOT NULL, "EduOrg" VARCHAR(200) NOT NULL, "City" VARCHAR(50) NOT NULL, "HasSchedule" NUMERIC(1,0) NOT NULL, "LastUpdate" DATE NOT NULL);
+INSERT INTO "Class" VALUES(1,'АС-16','АС-16','Физический','ГГУ им.Ф.Скарины','Гомель',1,'2015-03-16 13:06:19');
+INSERT INTO "Class" VALUES(2,'АС-26','АС-26','Физический','ГГУ им Ф.Скарины','Гомель',1,'2015-03-31');
+CREATE TABLE "Building" ("Id" INTEGER PRIMARY KEY NOT NULL, "Name" VARCHAR(10) NOT NULL, "Geo" VARCHAR(50), "Address" VARCHAR(200));
+INSERT INTO "Building" VALUES(1,'1',NULL,NULL);
+INSERT INTO "Building" VALUES(2,'2',NULL,NULL);
+INSERT INTO "Building" VALUES(3,'3',NULL,NULL);
+INSERT INTO "Building" VALUES(4,'4',NULL,NULL);
+INSERT INTO "Building" VALUES(5,'5',NULL,NULL);
+CREATE TABLE "Room" ("Id" INTEGER PRIMARY KEY NOT NULL, "Building_id" INTEGER NOT NULL REFERENCES "Building" ("Id"), "Name" VARCHAR(10) NOT NULL);
+INSERT INTO "Room" VALUES(1,1,'2-8');
+INSERT INTO "Room" VALUES(2,5,'2-16');
+INSERT INTO "Room" VALUES(3,5,'4-8');
+INSERT INTO "Room" VALUES(4,5,'4-9');
+INSERT INTO "Room" VALUES(5,5,'4-18');
+INSERT INTO "Room" VALUES(6,5,'3-7');
+INSERT INTO "Room" VALUES(7,5,'3-5');
+INSERT INTO "Room" VALUES(8,5,'2-25а');
+INSERT INTO "Room" VALUES(9,5,'4-17');
+INSERT INTO "Room" VALUES(10,5,'4-7');
+INSERT INTO "Room" VALUES(11,5,'5-12');
+INSERT INTO "Room" VALUES(12,5,'4-4');
+INSERT INTO "Room" VALUES(13,5,'4-10');
+CREATE TABLE "Schedule" ("Id" INTEGER PRIMARY KEY NOT NULL, "Task_id" INTEGER NOT NULL REFERENCES "Task" ("Id"), "Room_id" INTEGER NOT NULL REFERENCES "Room" ("Id"), "Teacher_id" INTEGER NOT NULL REFERENCES "Teacher" ("Id"), "Class_id" INTEGER NOT NULL REFERENCES "Class" ("Id"), "Task_time_id" INTEGER NOT NULL REFERENCES "Task_time" ("Id"), "Day" DATE NOT NULL);
+INSERT INTO "Schedule" VALUES(1,1,3,4,1,3,'2015-02-02');
+INSERT INTO "Schedule" VALUES(2,2,4,9,1,4,'2015-02-02');
+INSERT INTO "Schedule" VALUES(3,4,4,4,1,5,'2015-02-02');
+INSERT INTO "Schedule" VALUES(4,5,5,4,1,6,'2015-02-02');
+INSERT INTO "Schedule" VALUES(5,6,6,14,1,4,'2015-02-03');
+INSERT INTO "Schedule" VALUES(6,7,4,4,1,5,'2015-02-03');
+INSERT INTO "Schedule" VALUES(7,8,7,11,1,6,'2015-02-03');
+INSERT INTO "Schedule" VALUES(8,8,8,11,1,2,'2015-02-04');
+INSERT INTO "Schedule" VALUES(9,9,5,2,1,3,'2015-02-04');
+INSERT INTO "Schedule" VALUES(10,2,4,9,1,4,'2015-02-04');
+INSERT INTO "Schedule" VALUES(11,10,4,12,1,5,'2015-02-04');
+INSERT INTO "Schedule" VALUES(12,11,9,2,1,4,'2015-02-05');
+INSERT INTO "Schedule" VALUES(13,2,4,9,1,5,'2015-02-05');
+INSERT INTO "Schedule" VALUES(14,3,4,9,1,6,'2015-02-05');
+INSERT INTO "Schedule" VALUES(15,5,10,11,1,3,'2015-02-06');
+INSERT INTO "Schedule" VALUES(16,6,6,14,1,4,'2015-02-06');
+INSERT INTO "Schedule" VALUES(17,8,11,11,1,2,'2015-02-07');
+INSERT INTO "Schedule" VALUES(18,1,3,4,1,3,'2015-02-09');
+INSERT INTO "Schedule" VALUES(19,2,4,9,1,4,'2015-02-09');
+INSERT INTO "Schedule" VALUES(20,4,4,4,1,5,'2015-02-09');
+INSERT INTO "Schedule" VALUES(21,5,5,4,1,6,'2015-02-09');
+INSERT INTO "Schedule" VALUES(22,6,6,14,1,4,'2015-02-10');
+INSERT INTO "Schedule" VALUES(23,7,4,4,1,5,'2015-02-10');
+INSERT INTO "Schedule" VALUES(24,8,7,11,1,6,'2015-02-10');
+INSERT INTO "Schedule" VALUES(25,8,8,11,1,2,'2015-02-11');
+INSERT INTO "Schedule" VALUES(26,9,5,2,1,3,'2015-02-11');
+INSERT INTO "Schedule" VALUES(27,2,4,9,1,4,'2015-02-11');
+INSERT INTO "Schedule" VALUES(28,10,4,12,1,5,'2015-02-11');
+INSERT INTO "Schedule" VALUES(29,11,9,2,1,4,'2015-02-12');
+INSERT INTO "Schedule" VALUES(30,2,4,9,1,5,'2015-02-12');
+INSERT INTO "Schedule" VALUES(31,3,4,9,1,6,'2015-02-12');
+INSERT INTO "Schedule" VALUES(32,5,10,11,1,3,'2015-02-13');
+INSERT INTO "Schedule" VALUES(33,6,6,14,1,4,'2015-02-13');
+INSERT INTO "Schedule" VALUES(34,8,11,11,1,2,'2015-02-14');
+INSERT INTO "Schedule" VALUES(35,1,3,4,1,3,'2015-02-16');
+INSERT INTO "Schedule" VALUES(36,2,4,9,1,4,'2015-02-16');
+INSERT INTO "Schedule" VALUES(37,4,4,4,1,5,'2015-02-16');
+INSERT INTO "Schedule" VALUES(38,5,5,4,1,6,'2015-02-16');
+INSERT INTO "Schedule" VALUES(39,6,6,14,1,4,'2015-02-17');
+INSERT INTO "Schedule" VALUES(40,7,4,4,1,5,'2015-02-17');
+INSERT INTO "Schedule" VALUES(41,8,7,11,1,6,'2015-02-17');
+INSERT INTO "Schedule" VALUES(42,8,8,11,1,2,'2015-02-18');
+INSERT INTO "Schedule" VALUES(43,9,5,2,1,3,'2015-02-18');
+INSERT INTO "Schedule" VALUES(44,2,4,9,1,4,'2015-02-18');
+INSERT INTO "Schedule" VALUES(45,10,4,12,1,5,'2015-02-18');
+INSERT INTO "Schedule" VALUES(46,11,9,2,1,4,'2015-02-19');
+INSERT INTO "Schedule" VALUES(47,2,4,9,1,5,'2015-02-19');
+INSERT INTO "Schedule" VALUES(48,3,4,9,1,6,'2015-02-19');
+INSERT INTO "Schedule" VALUES(49,5,10,11,1,3,'2015-02-20');
+INSERT INTO "Schedule" VALUES(50,6,6,14,1,4,'2015-02-20');
+INSERT INTO "Schedule" VALUES(51,8,11,11,1,2,'2015-02-21');
+INSERT INTO "Schedule" VALUES(52,1,3,4,1,3,'2015-02-23');
+INSERT INTO "Schedule" VALUES(53,2,4,9,1,4,'2015-02-23');
+INSERT INTO "Schedule" VALUES(54,4,4,4,1,5,'2015-02-23');
+INSERT INTO "Schedule" VALUES(55,5,5,4,1,6,'2015-02-23');
+INSERT INTO "Schedule" VALUES(56,6,6,14,1,4,'2015-02-24');
+INSERT INTO "Schedule" VALUES(57,7,4,4,1,5,'2015-02-24');
+INSERT INTO "Schedule" VALUES(58,8,7,11,1,6,'2015-02-24');
+INSERT INTO "Schedule" VALUES(59,8,8,11,1,2,'2015-02-25');
+INSERT INTO "Schedule" VALUES(60,9,5,2,1,3,'2015-02-25');
+INSERT INTO "Schedule" VALUES(61,2,4,9,1,4,'2015-02-25');
+INSERT INTO "Schedule" VALUES(62,10,4,12,1,5,'2015-02-25');
+INSERT INTO "Schedule" VALUES(63,11,9,2,1,4,'2015-02-26');
+INSERT INTO "Schedule" VALUES(64,2,4,9,1,5,'2015-02-26');
+INSERT INTO "Schedule" VALUES(65,3,4,9,1,6,'2015-02-26');
+INSERT INTO "Schedule" VALUES(66,5,10,11,1,3,'2015-02-27');
+INSERT INTO "Schedule" VALUES(67,6,6,14,1,4,'2015-02-27');
+INSERT INTO "Schedule" VALUES(68,8,11,11,1,2,'2015-02-28');
+INSERT INTO "Schedule" VALUES(69,1,3,4,1,3,'2015-03-02');
+INSERT INTO "Schedule" VALUES(70,2,4,9,1,4,'2015-03-02');
+INSERT INTO "Schedule" VALUES(71,4,4,4,1,5,'2015-03-02');
+INSERT INTO "Schedule" VALUES(72,5,5,4,1,6,'2015-03-02');
+INSERT INTO "Schedule" VALUES(73,6,6,14,1,4,'2015-03-03');
+INSERT INTO "Schedule" VALUES(74,7,4,4,1,5,'2015-03-03');
+INSERT INTO "Schedule" VALUES(75,8,7,11,1,6,'2015-03-03');
+INSERT INTO "Schedule" VALUES(76,8,8,11,1,2,'2015-03-04');
+INSERT INTO "Schedule" VALUES(77,9,5,2,1,3,'2015-03-04');
+INSERT INTO "Schedule" VALUES(78,2,4,9,1,4,'2015-03-04');
+INSERT INTO "Schedule" VALUES(79,10,4,12,1,5,'2015-03-04');
+INSERT INTO "Schedule" VALUES(80,11,9,2,1,4,'2015-03-05');
+INSERT INTO "Schedule" VALUES(81,2,4,9,1,5,'2015-03-05');
+INSERT INTO "Schedule" VALUES(82,3,4,9,1,6,'2015-03-05');
+INSERT INTO "Schedule" VALUES(83,5,10,11,1,3,'2015-03-06');
+INSERT INTO "Schedule" VALUES(84,6,6,14,1,4,'2015-03-06');
+INSERT INTO "Schedule" VALUES(85,8,11,11,1,2,'2015-03-07');
+INSERT INTO "Schedule" VALUES(86,1,3,4,1,3,'2015-03-09');
+INSERT INTO "Schedule" VALUES(87,2,4,9,1,4,'2015-03-09');
+INSERT INTO "Schedule" VALUES(88,4,4,4,1,5,'2015-03-09');
+INSERT INTO "Schedule" VALUES(89,5,5,4,1,6,'2015-03-09');
+INSERT INTO "Schedule" VALUES(90,6,6,14,1,4,'2015-03-10');
+INSERT INTO "Schedule" VALUES(91,7,4,4,1,5,'2015-03-10');
+INSERT INTO "Schedule" VALUES(92,8,7,11,1,6,'2015-03-10');
+INSERT INTO "Schedule" VALUES(93,8,8,11,1,2,'2015-03-11');
+INSERT INTO "Schedule" VALUES(94,9,5,2,1,3,'2015-03-11');
+INSERT INTO "Schedule" VALUES(95,2,4,9,1,4,'2015-03-11');
+INSERT INTO "Schedule" VALUES(96,10,4,12,1,5,'2015-03-11');
+INSERT INTO "Schedule" VALUES(97,11,9,2,1,4,'2015-03-12');
+INSERT INTO "Schedule" VALUES(98,2,4,9,1,5,'2015-03-12');
+INSERT INTO "Schedule" VALUES(99,3,4,9,1,6,'2015-03-12');
+INSERT INTO "Schedule" VALUES(100,5,10,11,1,3,'2015-03-13');
+INSERT INTO "Schedule" VALUES(101,6,6,14,1,4,'2015-03-13');
+INSERT INTO "Schedule" VALUES(102,8,11,11,1,2,'2015-03-14');
+INSERT INTO "Schedule" VALUES(103,1,3,4,1,3,'2015-03-16');
+INSERT INTO "Schedule" VALUES(104,2,4,9,1,4,'2015-03-16');
+INSERT INTO "Schedule" VALUES(105,4,4,4,1,5,'2015-03-16');
+INSERT INTO "Schedule" VALUES(106,5,5,4,1,6,'2015-03-16');
+INSERT INTO "Schedule" VALUES(107,6,6,14,1,4,'2015-03-17');
+INSERT INTO "Schedule" VALUES(108,7,4,4,1,5,'2015-03-17');
+INSERT INTO "Schedule" VALUES(109,8,7,11,1,6,'2015-03-17');
+INSERT INTO "Schedule" VALUES(110,8,8,11,1,2,'2015-03-18');
+INSERT INTO "Schedule" VALUES(111,9,5,2,1,3,'2015-03-18');
+INSERT INTO "Schedule" VALUES(112,2,4,9,1,4,'2015-03-18');
+INSERT INTO "Schedule" VALUES(113,10,4,12,1,5,'2015-03-18');
+INSERT INTO "Schedule" VALUES(114,11,9,2,1,4,'2015-03-19');
+INSERT INTO "Schedule" VALUES(115,2,4,9,1,5,'2015-03-19');
+INSERT INTO "Schedule" VALUES(116,3,4,9,1,6,'2015-03-19');
+INSERT INTO "Schedule" VALUES(117,5,10,11,1,3,'2015-03-20');
+INSERT INTO "Schedule" VALUES(118,6,6,14,1,4,'2015-03-20');
+INSERT INTO "Schedule" VALUES(119,8,11,11,1,2,'2015-03-21');
+INSERT INTO "Schedule" VALUES(120,1,3,4,1,3,'2015-03-23');
+INSERT INTO "Schedule" VALUES(121,2,4,9,1,4,'2015-03-23');
+INSERT INTO "Schedule" VALUES(122,4,4,4,1,5,'2015-03-23');
+INSERT INTO "Schedule" VALUES(123,5,5,4,1,6,'2015-03-23');
+INSERT INTO "Schedule" VALUES(124,6,6,14,1,4,'2015-03-24');
+INSERT INTO "Schedule" VALUES(125,7,4,4,1,5,'2015-03-24');
+INSERT INTO "Schedule" VALUES(126,8,7,11,1,6,'2015-03-24');
+INSERT INTO "Schedule" VALUES(127,8,8,11,1,2,'2015-03-25');
+INSERT INTO "Schedule" VALUES(128,9,5,2,1,3,'2015-03-25');
+INSERT INTO "Schedule" VALUES(129,2,4,9,1,4,'2015-03-25');
+INSERT INTO "Schedule" VALUES(130,10,4,12,1,5,'2015-03-25');
+INSERT INTO "Schedule" VALUES(131,11,9,2,1,4,'2015-03-26');
+INSERT INTO "Schedule" VALUES(132,2,4,9,1,5,'2015-03-26');
+INSERT INTO "Schedule" VALUES(133,3,4,9,1,6,'2015-03-26');
+INSERT INTO "Schedule" VALUES(134,5,10,11,1,3,'2015-03-27');
+INSERT INTO "Schedule" VALUES(135,6,6,14,1,4,'2015-03-27');
+INSERT INTO "Schedule" VALUES(136,8,11,11,1,2,'2015-03-28');
+INSERT INTO "Schedule" VALUES(137,1,3,4,1,3,'2015-03-30');
+INSERT INTO "Schedule" VALUES(138,2,4,9,1,4,'2015-03-30');
+INSERT INTO "Schedule" VALUES(139,4,4,4,1,5,'2015-03-30');
+INSERT INTO "Schedule" VALUES(140,5,5,4,1,6,'2015-03-30');
+INSERT INTO "Schedule" VALUES(141,6,6,14,1,4,'2015-03-31');
+INSERT INTO "Schedule" VALUES(142,7,4,4,1,5,'2015-03-31');
+INSERT INTO "Schedule" VALUES(143,8,7,11,1,6,'2015-03-31');
+INSERT INTO "Schedule" VALUES(144,8,8,11,1,2,'2015-04-01');
+INSERT INTO "Schedule" VALUES(145,9,5,2,1,3,'2015-04-01');
+INSERT INTO "Schedule" VALUES(146,2,4,9,1,4,'2015-04-01');
+INSERT INTO "Schedule" VALUES(147,10,4,12,1,5,'2015-04-01');
+INSERT INTO "Schedule" VALUES(148,11,9,2,1,4,'2015-04-02');
+INSERT INTO "Schedule" VALUES(149,2,4,9,1,5,'2015-04-02');
+INSERT INTO "Schedule" VALUES(150,3,4,9,1,6,'2015-04-02');
+INSERT INTO "Schedule" VALUES(151,5,10,11,1,3,'2015-04-03');
+INSERT INTO "Schedule" VALUES(152,6,6,14,1,4,'2015-04-03');
+INSERT INTO "Schedule" VALUES(153,8,11,11,1,2,'2015-04-04');
+INSERT INTO "Schedule" VALUES(154,1,3,4,1,3,'2015-04-06');
+INSERT INTO "Schedule" VALUES(155,2,4,9,1,4,'2015-04-06');
+INSERT INTO "Schedule" VALUES(156,4,4,4,1,5,'2015-04-06');
+INSERT INTO "Schedule" VALUES(157,5,5,4,1,6,'2015-04-06');
+INSERT INTO "Schedule" VALUES(158,6,6,14,1,4,'2015-04-07');
+INSERT INTO "Schedule" VALUES(159,7,4,4,1,5,'2015-04-07');
+INSERT INTO "Schedule" VALUES(160,8,7,11,1,6,'2015-04-07');
+INSERT INTO "Schedule" VALUES(161,8,8,11,1,2,'2015-04-08');
+INSERT INTO "Schedule" VALUES(162,9,5,2,1,3,'2015-04-08');
+INSERT INTO "Schedule" VALUES(163,2,4,9,1,4,'2015-04-08');
+INSERT INTO "Schedule" VALUES(164,10,4,12,1,5,'2015-04-08');
+INSERT INTO "Schedule" VALUES(165,11,9,2,1,4,'2015-04-09');
+INSERT INTO "Schedule" VALUES(166,2,4,9,1,5,'2015-04-09');
+INSERT INTO "Schedule" VALUES(167,3,4,9,1,6,'2015-04-09');
+INSERT INTO "Schedule" VALUES(168,5,10,11,1,3,'2015-04-10');
+INSERT INTO "Schedule" VALUES(169,6,6,14,1,4,'2015-04-10');
+INSERT INTO "Schedule" VALUES(170,8,11,11,1,2,'2015-04-11');
+INSERT INTO "Schedule" VALUES(171,1,3,4,1,3,'2015-04-13');
+INSERT INTO "Schedule" VALUES(172,2,4,9,1,4,'2015-04-13');
+INSERT INTO "Schedule" VALUES(173,4,4,4,1,5,'2015-04-13');
+INSERT INTO "Schedule" VALUES(174,5,5,4,1,6,'2015-04-13');
+INSERT INTO "Schedule" VALUES(175,6,6,14,1,4,'2015-04-14');
+INSERT INTO "Schedule" VALUES(176,7,4,4,1,5,'2015-04-14');
+INSERT INTO "Schedule" VALUES(177,8,7,11,1,6,'2015-04-14');
+INSERT INTO "Schedule" VALUES(178,8,8,11,1,2,'2015-04-15');
+INSERT INTO "Schedule" VALUES(179,9,5,2,1,3,'2015-04-15');
+INSERT INTO "Schedule" VALUES(180,2,4,9,1,4,'2015-04-15');
+INSERT INTO "Schedule" VALUES(181,10,4,12,1,5,'2015-04-15');
+INSERT INTO "Schedule" VALUES(182,11,9,2,1,4,'2015-04-16');
+INSERT INTO "Schedule" VALUES(183,2,4,9,1,5,'2015-04-16');
+INSERT INTO "Schedule" VALUES(184,3,4,9,1,6,'2015-04-16');
+INSERT INTO "Schedule" VALUES(185,5,10,11,1,3,'2015-04-17');
+INSERT INTO "Schedule" VALUES(186,6,6,14,1,4,'2015-04-17');
+INSERT INTO "Schedule" VALUES(187,8,11,11,1,2,'2015-04-18');
+INSERT INTO "Schedule" VALUES(188,1,3,4,1,3,'2015-04-20');
+INSERT INTO "Schedule" VALUES(189,2,4,9,1,4,'2015-04-20');
+INSERT INTO "Schedule" VALUES(190,4,4,4,1,5,'2015-04-20');
+INSERT INTO "Schedule" VALUES(191,5,5,4,1,6,'2015-04-20');
+INSERT INTO "Schedule" VALUES(192,6,6,14,1,4,'2015-04-21');
+INSERT INTO "Schedule" VALUES(193,7,4,4,1,5,'2015-04-21');
+INSERT INTO "Schedule" VALUES(194,8,7,11,1,6,'2015-04-21');
+INSERT INTO "Schedule" VALUES(195,8,8,11,1,2,'2015-04-22');
+INSERT INTO "Schedule" VALUES(196,9,5,2,1,3,'2015-04-22');
+INSERT INTO "Schedule" VALUES(197,2,4,9,1,4,'2015-04-22');
+INSERT INTO "Schedule" VALUES(198,10,4,12,1,5,'2015-04-22');
+INSERT INTO "Schedule" VALUES(199,11,9,2,1,4,'2015-04-23');
+INSERT INTO "Schedule" VALUES(200,2,4,9,1,5,'2015-04-23');
+INSERT INTO "Schedule" VALUES(201,3,4,9,1,6,'2015-04-23');
+INSERT INTO "Schedule" VALUES(202,5,10,11,1,3,'2015-04-24');
+INSERT INTO "Schedule" VALUES(203,6,6,14,1,4,'2015-04-24');
+INSERT INTO "Schedule" VALUES(204,8,11,11,1,2,'2015-04-25');
+INSERT INTO "Schedule" VALUES(205,1,3,4,1,3,'2015-04-27');
+INSERT INTO "Schedule" VALUES(206,2,4,9,1,4,'2015-04-27');
+INSERT INTO "Schedule" VALUES(207,4,4,4,1,5,'2015-04-27');
+INSERT INTO "Schedule" VALUES(208,5,5,4,1,6,'2015-04-27');
+INSERT INTO "Schedule" VALUES(209,6,6,14,1,4,'2015-04-28');
+INSERT INTO "Schedule" VALUES(210,7,4,4,1,5,'2015-04-28');
+INSERT INTO "Schedule" VALUES(211,8,7,11,1,6,'2015-04-28');
+INSERT INTO "Schedule" VALUES(212,8,8,11,1,2,'2015-04-29');
+INSERT INTO "Schedule" VALUES(213,9,5,2,1,3,'2015-04-29');
+INSERT INTO "Schedule" VALUES(214,2,4,9,1,4,'2015-04-29');
+INSERT INTO "Schedule" VALUES(215,10,4,12,1,5,'2015-04-29');
+INSERT INTO "Schedule" VALUES(216,11,9,2,1,4,'2015-04-30');
+INSERT INTO "Schedule" VALUES(217,2,4,9,1,5,'2015-04-30');
+INSERT INTO "Schedule" VALUES(218,3,4,9,1,6,'2015-04-30');
+INSERT INTO "Schedule" VALUES(219,5,10,11,1,3,'2015-05-01');
+INSERT INTO "Schedule" VALUES(220,6,6,14,1,4,'2015-05-01');
+INSERT INTO "Schedule" VALUES(221,8,11,11,1,2,'2015-05-02');
+INSERT INTO "Schedule" VALUES(222,1,3,4,1,3,'2015-05-04');
+INSERT INTO "Schedule" VALUES(223,2,4,9,1,4,'2015-05-04');
+INSERT INTO "Schedule" VALUES(224,4,4,4,1,5,'2015-05-04');
+INSERT INTO "Schedule" VALUES(225,5,5,4,1,6,'2015-05-04');
+INSERT INTO "Schedule" VALUES(226,6,6,14,1,4,'2015-05-05');
+INSERT INTO "Schedule" VALUES(227,7,4,4,1,5,'2015-05-05');
+INSERT INTO "Schedule" VALUES(228,8,7,11,1,6,'2015-05-05');
+INSERT INTO "Schedule" VALUES(229,8,8,11,1,2,'2015-05-06');
+INSERT INTO "Schedule" VALUES(230,9,5,2,1,3,'2015-05-06');
+INSERT INTO "Schedule" VALUES(231,2,4,9,1,4,'2015-05-06');
+INSERT INTO "Schedule" VALUES(232,10,4,12,1,5,'2015-05-06');
+INSERT INTO "Schedule" VALUES(233,11,9,2,1,4,'2015-05-07');
+INSERT INTO "Schedule" VALUES(234,2,4,9,1,5,'2015-05-07');
+INSERT INTO "Schedule" VALUES(235,3,4,9,1,6,'2015-05-07');
+INSERT INTO "Schedule" VALUES(236,5,10,11,1,3,'2015-05-08');
+INSERT INTO "Schedule" VALUES(237,6,6,14,1,4,'2015-05-08');
+INSERT INTO "Schedule" VALUES(238,8,11,11,1,2,'2015-05-09');
+INSERT INTO "Schedule" VALUES(239,1,3,4,1,3,'2015-05-11');
+INSERT INTO "Schedule" VALUES(240,2,4,9,1,4,'2015-05-11');
+INSERT INTO "Schedule" VALUES(241,4,4,4,1,5,'2015-05-11');
+INSERT INTO "Schedule" VALUES(242,5,5,4,1,6,'2015-05-11');
+INSERT INTO "Schedule" VALUES(243,6,6,14,1,4,'2015-05-12');
+INSERT INTO "Schedule" VALUES(244,7,4,4,1,5,'2015-05-12');
+INSERT INTO "Schedule" VALUES(245,8,7,11,1,6,'2015-05-12');
+INSERT INTO "Schedule" VALUES(246,8,8,11,1,2,'2015-05-13');
+INSERT INTO "Schedule" VALUES(247,9,5,2,1,3,'2015-05-13');
+INSERT INTO "Schedule" VALUES(248,2,4,9,1,4,'2015-05-13');
+INSERT INTO "Schedule" VALUES(249,10,4,12,1,5,'2015-05-13');
+INSERT INTO "Schedule" VALUES(250,11,9,2,1,4,'2015-05-14');
+INSERT INTO "Schedule" VALUES(251,2,4,9,1,5,'2015-05-14');
+INSERT INTO "Schedule" VALUES(252,3,4,9,1,6,'2015-05-14');
+INSERT INTO "Schedule" VALUES(253,5,10,11,1,3,'2015-05-15');
+INSERT INTO "Schedule" VALUES(254,6,6,14,1,4,'2015-05-15');
+INSERT INTO "Schedule" VALUES(255,8,11,11,1,2,'2015-05-16');
+INSERT INTO "Schedule" VALUES(256,1,3,4,1,3,'2015-05-18');
+INSERT INTO "Schedule" VALUES(257,2,4,9,1,4,'2015-05-18');
+INSERT INTO "Schedule" VALUES(258,4,4,4,1,5,'2015-05-18');
+INSERT INTO "Schedule" VALUES(259,5,5,4,1,6,'2015-05-18');
+INSERT INTO "Schedule" VALUES(260,6,6,14,1,4,'2015-05-19');
+INSERT INTO "Schedule" VALUES(261,7,4,4,1,5,'2015-05-19');
+INSERT INTO "Schedule" VALUES(262,8,7,11,1,6,'2015-05-19');
+INSERT INTO "Schedule" VALUES(263,8,8,11,1,2,'2015-05-20');
+INSERT INTO "Schedule" VALUES(264,9,5,2,1,3,'2015-05-20');
+INSERT INTO "Schedule" VALUES(265,2,4,9,1,4,'2015-05-20');
+INSERT INTO "Schedule" VALUES(266,10,4,12,1,5,'2015-05-20');
+INSERT INTO "Schedule" VALUES(267,11,9,2,1,4,'2015-05-21');
+INSERT INTO "Schedule" VALUES(268,2,4,9,1,5,'2015-05-21');
+INSERT INTO "Schedule" VALUES(269,3,4,9,1,6,'2015-05-21');
+INSERT INTO "Schedule" VALUES(270,5,10,11,1,3,'2015-05-22');
+INSERT INTO "Schedule" VALUES(271,6,6,14,1,4,'2015-05-22');
+INSERT INTO "Schedule" VALUES(272,8,11,11,1,2,'2015-05-23');
+INSERT INTO "Schedule" VALUES(300,12,12,15,2,2,'2015-02-02');
+INSERT INTO "Schedule" VALUES(301,12,12,15,2,3,'2015-02-02');
+INSERT INTO "Schedule" VALUES(302,13,13,6,2,4,'2015-02-02');
+INSERT INTO "Schedule" VALUES(303,13,13,6,2,5,'2015-02-02');
+INSERT INTO "Schedule" VALUES(304,12,12,15,2,2,'2015-02-03');
+INSERT INTO "Schedule" VALUES(305,12,12,15,2,3,'2015-02-03');
+INSERT INTO "Schedule" VALUES(306,14,12,15,2,4,'2015-02-03');
+INSERT INTO "Schedule" VALUES(307,16,13,5,2,4,'2015-02-04');
+INSERT INTO "Schedule" VALUES(308,15,13,5,2,5,'2015-02-04');
+INSERT INTO "Schedule" VALUES(309,17,9,5,2,5,'2015-02-04');
+INSERT INTO "Schedule" VALUES(310,18,3,3,2,3,'2015-02-05');
+INSERT INTO "Schedule" VALUES(311,19,13,16,2,4,'2015-02-05');
+INSERT INTO "Schedule" VALUES(312,20,13,5,2,5,'2015-02-05');
+INSERT INTO "Schedule" VALUES(313,21,3,5,2,6,'2015-02-05');
+INSERT INTO "Schedule" VALUES(314,22,3,6,2,3,'2015-02-06');
+INSERT INTO "Schedule" VALUES(315,23,13,6,2,4,'2015-02-06');
+INSERT INTO "Schedule" VALUES(316,24,13,6,2,5,'2015-02-06');
+INSERT INTO "Schedule" VALUES(317,12,12,15,2,2,'2015-02-09');
+INSERT INTO "Schedule" VALUES(318,12,12,15,2,3,'2015-02-09');
+INSERT INTO "Schedule" VALUES(319,13,13,6,2,4,'2015-02-09');
+INSERT INTO "Schedule" VALUES(320,13,13,6,2,5,'2015-02-09');
+INSERT INTO "Schedule" VALUES(321,12,12,15,2,2,'2015-02-10');
+INSERT INTO "Schedule" VALUES(322,12,12,15,2,3,'2015-02-10');
+INSERT INTO "Schedule" VALUES(323,14,12,15,2,4,'2015-02-10');
+INSERT INTO "Schedule" VALUES(324,16,13,5,2,4,'2015-02-11');
+INSERT INTO "Schedule" VALUES(325,15,13,5,2,5,'2015-02-11');
+INSERT INTO "Schedule" VALUES(326,17,9,5,2,5,'2015-02-11');
+INSERT INTO "Schedule" VALUES(327,18,3,3,2,3,'2015-02-12');
+INSERT INTO "Schedule" VALUES(328,19,13,16,2,4,'2015-02-12');
+INSERT INTO "Schedule" VALUES(329,20,13,5,2,5,'2015-02-12');
+INSERT INTO "Schedule" VALUES(330,21,3,5,2,6,'2015-02-12');
+INSERT INTO "Schedule" VALUES(331,22,3,6,2,3,'2015-02-13');
+INSERT INTO "Schedule" VALUES(332,23,13,6,2,4,'2015-02-13');
+INSERT INTO "Schedule" VALUES(333,24,13,6,2,5,'2015-02-13');
+INSERT INTO "Schedule" VALUES(334,12,12,15,2,2,'2015-02-16');
+INSERT INTO "Schedule" VALUES(335,12,12,15,2,3,'2015-02-16');
+INSERT INTO "Schedule" VALUES(336,13,13,6,2,4,'2015-02-16');
+INSERT INTO "Schedule" VALUES(337,13,13,6,2,5,'2015-02-16');
+INSERT INTO "Schedule" VALUES(338,12,12,15,2,2,'2015-02-17');
+INSERT INTO "Schedule" VALUES(339,12,12,15,2,3,'2015-02-17');
+INSERT INTO "Schedule" VALUES(340,14,12,15,2,4,'2015-02-17');
+INSERT INTO "Schedule" VALUES(341,16,13,5,2,4,'2015-02-18');
+INSERT INTO "Schedule" VALUES(342,15,13,5,2,5,'2015-02-18');
+INSERT INTO "Schedule" VALUES(343,17,9,5,2,5,'2015-02-18');
+INSERT INTO "Schedule" VALUES(344,18,3,3,2,3,'2015-02-19');
+INSERT INTO "Schedule" VALUES(345,19,13,16,2,4,'2015-02-19');
+INSERT INTO "Schedule" VALUES(346,20,13,5,2,5,'2015-02-19');
+INSERT INTO "Schedule" VALUES(347,21,3,5,2,6,'2015-02-19');
+INSERT INTO "Schedule" VALUES(348,22,3,6,2,3,'2015-02-20');
+INSERT INTO "Schedule" VALUES(349,23,13,6,2,4,'2015-02-20');
+INSERT INTO "Schedule" VALUES(350,24,13,6,2,5,'2015-02-20');
+INSERT INTO "Schedule" VALUES(351,12,12,15,2,2,'2015-02-23');
+INSERT INTO "Schedule" VALUES(352,12,12,15,2,3,'2015-02-23');
+INSERT INTO "Schedule" VALUES(353,13,13,6,2,4,'2015-02-23');
+INSERT INTO "Schedule" VALUES(354,13,13,6,2,5,'2015-02-23');
+INSERT INTO "Schedule" VALUES(355,12,12,15,2,2,'2015-02-24');
+INSERT INTO "Schedule" VALUES(356,12,12,15,2,3,'2015-02-24');
+INSERT INTO "Schedule" VALUES(357,14,12,15,2,4,'2015-02-24');
+INSERT INTO "Schedule" VALUES(358,16,13,5,2,4,'2015-02-25');
+INSERT INTO "Schedule" VALUES(359,15,13,5,2,5,'2015-02-25');
+INSERT INTO "Schedule" VALUES(360,17,9,5,2,5,'2015-02-25');
+INSERT INTO "Schedule" VALUES(361,18,3,3,2,3,'2015-02-26');
+INSERT INTO "Schedule" VALUES(362,19,13,16,2,4,'2015-02-26');
+INSERT INTO "Schedule" VALUES(363,20,13,5,2,5,'2015-02-26');
+INSERT INTO "Schedule" VALUES(364,21,3,5,2,6,'2015-02-26');
+INSERT INTO "Schedule" VALUES(365,22,3,6,2,3,'2015-02-27');
+INSERT INTO "Schedule" VALUES(366,23,13,6,2,4,'2015-02-27');
+INSERT INTO "Schedule" VALUES(367,24,13,6,2,5,'2015-02-27');
+INSERT INTO "Schedule" VALUES(368,12,12,15,2,2,'2015-03-02');
+INSERT INTO "Schedule" VALUES(369,12,12,15,2,3,'2015-03-02');
+INSERT INTO "Schedule" VALUES(370,13,13,6,2,4,'2015-03-02');
+INSERT INTO "Schedule" VALUES(371,13,13,6,2,5,'2015-03-02');
+INSERT INTO "Schedule" VALUES(372,12,12,15,2,2,'2015-03-03');
+INSERT INTO "Schedule" VALUES(373,12,12,15,2,3,'2015-03-03');
+INSERT INTO "Schedule" VALUES(374,14,12,15,2,4,'2015-03-03');
+INSERT INTO "Schedule" VALUES(375,16,13,5,2,4,'2015-03-04');
+INSERT INTO "Schedule" VALUES(376,15,13,5,2,5,'2015-03-04');
+INSERT INTO "Schedule" VALUES(377,17,9,5,2,5,'2015-03-04');
+INSERT INTO "Schedule" VALUES(378,18,3,3,2,3,'2015-03-05');
+INSERT INTO "Schedule" VALUES(379,19,13,16,2,4,'2015-03-05');
+INSERT INTO "Schedule" VALUES(380,20,13,5,2,5,'2015-03-05');
+INSERT INTO "Schedule" VALUES(381,21,3,5,2,6,'2015-03-05');
+INSERT INTO "Schedule" VALUES(382,22,3,6,2,3,'2015-03-06');
+INSERT INTO "Schedule" VALUES(383,23,13,6,2,4,'2015-03-06');
+INSERT INTO "Schedule" VALUES(384,24,13,6,2,5,'2015-03-06');
+INSERT INTO "Schedule" VALUES(385,12,12,15,2,2,'2015-03-09');
+INSERT INTO "Schedule" VALUES(386,12,12,15,2,3,'2015-03-09');
+INSERT INTO "Schedule" VALUES(387,13,13,6,2,4,'2015-03-09');
+INSERT INTO "Schedule" VALUES(388,13,13,6,2,5,'2015-03-09');
+INSERT INTO "Schedule" VALUES(389,12,12,15,2,2,'2015-03-10');
+INSERT INTO "Schedule" VALUES(390,12,12,15,2,3,'2015-03-10');
+INSERT INTO "Schedule" VALUES(391,14,12,15,2,4,'2015-03-10');
+INSERT INTO "Schedule" VALUES(392,16,13,5,2,4,'2015-03-11');
+INSERT INTO "Schedule" VALUES(393,15,13,5,2,5,'2015-03-11');
+INSERT INTO "Schedule" VALUES(394,17,9,5,2,5,'2015-03-11');
+INSERT INTO "Schedule" VALUES(395,18,3,3,2,3,'2015-03-12');
+INSERT INTO "Schedule" VALUES(396,19,13,16,2,4,'2015-03-12');
+INSERT INTO "Schedule" VALUES(397,20,13,5,2,5,'2015-03-12');
+INSERT INTO "Schedule" VALUES(398,21,3,5,2,6,'2015-03-12');
+INSERT INTO "Schedule" VALUES(399,22,3,6,2,3,'2015-03-13');
+INSERT INTO "Schedule" VALUES(400,23,13,6,2,4,'2015-03-13');
+INSERT INTO "Schedule" VALUES(401,24,13,6,2,5,'2015-03-13');
+INSERT INTO "Schedule" VALUES(402,12,12,15,2,2,'2015-03-16');
+INSERT INTO "Schedule" VALUES(403,12,12,15,2,3,'2015-03-16');
+INSERT INTO "Schedule" VALUES(404,13,13,6,2,4,'2015-03-16');
+INSERT INTO "Schedule" VALUES(405,13,13,6,2,5,'2015-03-16');
+INSERT INTO "Schedule" VALUES(406,12,12,15,2,2,'2015-03-17');
+INSERT INTO "Schedule" VALUES(407,12,12,15,2,3,'2015-03-17');
+INSERT INTO "Schedule" VALUES(408,14,12,15,2,4,'2015-03-17');
+INSERT INTO "Schedule" VALUES(409,16,13,5,2,4,'2015-03-18');
+INSERT INTO "Schedule" VALUES(410,15,13,5,2,5,'2015-03-18');
+INSERT INTO "Schedule" VALUES(411,17,9,5,2,5,'2015-03-18');
+INSERT INTO "Schedule" VALUES(412,18,3,3,2,3,'2015-03-19');
+INSERT INTO "Schedule" VALUES(413,19,13,16,2,4,'2015-03-19');
+INSERT INTO "Schedule" VALUES(414,20,13,5,2,5,'2015-03-19');
+INSERT INTO "Schedule" VALUES(415,21,3,5,2,6,'2015-03-19');
+INSERT INTO "Schedule" VALUES(416,22,3,6,2,3,'2015-03-20');
+INSERT INTO "Schedule" VALUES(417,23,13,6,2,4,'2015-03-20');
+INSERT INTO "Schedule" VALUES(418,24,13,6,2,5,'2015-03-20');
+INSERT INTO "Schedule" VALUES(419,12,12,15,2,2,'2015-03-23');
+INSERT INTO "Schedule" VALUES(420,12,12,15,2,3,'2015-03-23');
+INSERT INTO "Schedule" VALUES(421,13,13,6,2,4,'2015-03-23');
+INSERT INTO "Schedule" VALUES(422,13,13,6,2,5,'2015-03-23');
+INSERT INTO "Schedule" VALUES(423,12,12,15,2,2,'2015-03-24');
+INSERT INTO "Schedule" VALUES(424,12,12,15,2,3,'2015-03-24');
+INSERT INTO "Schedule" VALUES(425,14,12,15,2,4,'2015-03-24');
+INSERT INTO "Schedule" VALUES(426,16,13,5,2,4,'2015-03-25');
+INSERT INTO "Schedule" VALUES(427,15,13,5,2,5,'2015-03-25');
+INSERT INTO "Schedule" VALUES(428,17,9,5,2,5,'2015-03-25');
+INSERT INTO "Schedule" VALUES(429,18,3,3,2,3,'2015-03-26');
+INSERT INTO "Schedule" VALUES(430,19,13,16,2,4,'2015-03-26');
+INSERT INTO "Schedule" VALUES(431,20,13,5,2,5,'2015-03-26');
+INSERT INTO "Schedule" VALUES(432,21,3,5,2,6,'2015-03-26');
+INSERT INTO "Schedule" VALUES(433,22,3,6,2,3,'2015-03-27');
+INSERT INTO "Schedule" VALUES(434,23,13,6,2,4,'2015-03-27');
+INSERT INTO "Schedule" VALUES(435,24,13,6,2,5,'2015-03-27');
+INSERT INTO "Schedule" VALUES(436,12,12,15,2,2,'2015-03-30');
+INSERT INTO "Schedule" VALUES(437,12,12,15,2,3,'2015-03-30');
+INSERT INTO "Schedule" VALUES(438,13,13,6,2,4,'2015-03-30');
+INSERT INTO "Schedule" VALUES(439,13,13,6,2,5,'2015-03-30');
+INSERT INTO "Schedule" VALUES(440,12,12,15,2,2,'2015-03-31');
+INSERT INTO "Schedule" VALUES(441,12,12,15,2,3,'2015-03-31');
+INSERT INTO "Schedule" VALUES(442,14,12,15,2,4,'2015-03-31');
+INSERT INTO "Schedule" VALUES(443,16,13,5,2,4,'2015-04-01');
+INSERT INTO "Schedule" VALUES(444,15,13,5,2,5,'2015-04-01');
+INSERT INTO "Schedule" VALUES(445,17,9,5,2,5,'2015-04-01');
+INSERT INTO "Schedule" VALUES(446,18,3,3,2,3,'2015-04-02');
+INSERT INTO "Schedule" VALUES(447,19,13,16,2,4,'2015-04-02');
+INSERT INTO "Schedule" VALUES(448,20,13,5,2,5,'2015-04-02');
+INSERT INTO "Schedule" VALUES(449,21,3,5,2,6,'2015-04-02');
+INSERT INTO "Schedule" VALUES(450,22,3,6,2,3,'2015-04-03');
+INSERT INTO "Schedule" VALUES(451,23,13,6,2,4,'2015-04-03');
+INSERT INTO "Schedule" VALUES(452,24,13,6,2,5,'2015-04-03');
+INSERT INTO "Schedule" VALUES(453,12,12,15,2,2,'2015-04-06');
+INSERT INTO "Schedule" VALUES(454,12,12,15,2,3,'2015-04-06');
+INSERT INTO "Schedule" VALUES(455,13,13,6,2,4,'2015-04-06');
+INSERT INTO "Schedule" VALUES(456,13,13,6,2,5,'2015-04-06');
+INSERT INTO "Schedule" VALUES(457,12,12,15,2,2,'2015-04-07');
+INSERT INTO "Schedule" VALUES(458,12,12,15,2,3,'2015-04-07');
+INSERT INTO "Schedule" VALUES(459,14,12,15,2,4,'2015-04-07');
+INSERT INTO "Schedule" VALUES(460,16,13,5,2,4,'2015-04-08');
+INSERT INTO "Schedule" VALUES(461,15,13,5,2,5,'2015-04-08');
+INSERT INTO "Schedule" VALUES(462,17,9,5,2,5,'2015-04-08');
+INSERT INTO "Schedule" VALUES(463,18,3,3,2,3,'2015-04-09');
+INSERT INTO "Schedule" VALUES(464,19,13,16,2,4,'2015-04-09');
+INSERT INTO "Schedule" VALUES(465,20,13,5,2,5,'2015-04-09');
+INSERT INTO "Schedule" VALUES(466,21,3,5,2,6,'2015-04-09');
+INSERT INTO "Schedule" VALUES(467,22,3,6,2,3,'2015-04-10');
+INSERT INTO "Schedule" VALUES(468,23,13,6,2,4,'2015-04-10');
+INSERT INTO "Schedule" VALUES(469,24,13,6,2,5,'2015-04-10');
+INSERT INTO "Schedule" VALUES(470,12,12,15,2,2,'2015-04-13');
+INSERT INTO "Schedule" VALUES(471,12,12,15,2,3,'2015-04-13');
+INSERT INTO "Schedule" VALUES(472,13,13,6,2,4,'2015-04-13');
+INSERT INTO "Schedule" VALUES(473,13,13,6,2,5,'2015-04-13');
+INSERT INTO "Schedule" VALUES(474,12,12,15,2,2,'2015-04-14');
+INSERT INTO "Schedule" VALUES(475,12,12,15,2,3,'2015-04-14');
+INSERT INTO "Schedule" VALUES(476,14,12,15,2,4,'2015-04-14');
+INSERT INTO "Schedule" VALUES(477,16,13,5,2,4,'2015-04-15');
+INSERT INTO "Schedule" VALUES(478,15,13,5,2,5,'2015-04-15');
+INSERT INTO "Schedule" VALUES(479,17,9,5,2,5,'2015-04-15');
+INSERT INTO "Schedule" VALUES(480,18,3,3,2,3,'2015-04-16');
+INSERT INTO "Schedule" VALUES(481,19,13,16,2,4,'2015-04-16');
+INSERT INTO "Schedule" VALUES(482,20,13,5,2,5,'2015-04-16');
+INSERT INTO "Schedule" VALUES(483,21,3,5,2,6,'2015-04-16');
+INSERT INTO "Schedule" VALUES(484,22,3,6,2,3,'2015-04-17');
+INSERT INTO "Schedule" VALUES(485,23,13,6,2,4,'2015-04-17');
+INSERT INTO "Schedule" VALUES(486,24,13,6,2,5,'2015-04-17');
+INSERT INTO "Schedule" VALUES(487,12,12,15,2,2,'2015-04-20');
+INSERT INTO "Schedule" VALUES(488,12,12,15,2,3,'2015-04-20');
+INSERT INTO "Schedule" VALUES(489,13,13,6,2,4,'2015-04-20');
+INSERT INTO "Schedule" VALUES(490,13,13,6,2,5,'2015-04-20');
+INSERT INTO "Schedule" VALUES(491,12,12,15,2,2,'2015-04-21');
+INSERT INTO "Schedule" VALUES(492,12,12,15,2,3,'2015-04-21');
+INSERT INTO "Schedule" VALUES(493,14,12,15,2,4,'2015-04-21');
+INSERT INTO "Schedule" VALUES(494,16,13,5,2,4,'2015-04-22');
+INSERT INTO "Schedule" VALUES(495,15,13,5,2,5,'2015-04-22');
+INSERT INTO "Schedule" VALUES(496,17,9,5,2,5,'2015-04-22');
+INSERT INTO "Schedule" VALUES(497,18,3,3,2,3,'2015-04-23');
+INSERT INTO "Schedule" VALUES(498,19,13,16,2,4,'2015-04-23');
+INSERT INTO "Schedule" VALUES(499,20,13,5,2,5,'2015-04-23');
+INSERT INTO "Schedule" VALUES(500,21,3,5,2,6,'2015-04-23');
+INSERT INTO "Schedule" VALUES(501,22,3,6,2,3,'2015-04-24');
+INSERT INTO "Schedule" VALUES(502,23,13,6,2,4,'2015-04-24');
+INSERT INTO "Schedule" VALUES(503,24,13,6,2,5,'2015-04-24');
+INSERT INTO "Schedule" VALUES(504,12,12,15,2,2,'2015-04-27');
+INSERT INTO "Schedule" VALUES(505,12,12,15,2,3,'2015-04-27');
+INSERT INTO "Schedule" VALUES(506,13,13,6,2,4,'2015-04-27');
+INSERT INTO "Schedule" VALUES(507,13,13,6,2,5,'2015-04-27');
+INSERT INTO "Schedule" VALUES(508,12,12,15,2,2,'2015-04-28');
+INSERT INTO "Schedule" VALUES(509,12,12,15,2,3,'2015-04-28');
+INSERT INTO "Schedule" VALUES(510,14,12,15,2,4,'2015-04-28');
+INSERT INTO "Schedule" VALUES(511,16,13,5,2,4,'2015-04-29');
+INSERT INTO "Schedule" VALUES(512,15,13,5,2,5,'2015-04-29');
+INSERT INTO "Schedule" VALUES(513,17,9,5,2,5,'2015-04-29');
+INSERT INTO "Schedule" VALUES(514,18,3,3,2,3,'2015-04-30');
+INSERT INTO "Schedule" VALUES(515,19,13,16,2,4,'2015-04-30');
+INSERT INTO "Schedule" VALUES(516,20,13,5,2,5,'2015-04-30');
+INSERT INTO "Schedule" VALUES(517,21,3,5,2,6,'2015-04-30');
+INSERT INTO "Schedule" VALUES(518,22,3,6,2,3,'2015-05-01');
+INSERT INTO "Schedule" VALUES(519,23,13,6,2,4,'2015-05-01');
+INSERT INTO "Schedule" VALUES(520,24,13,6,2,5,'2015-05-01');
+INSERT INTO "Schedule" VALUES(521,12,12,15,2,2,'2015-05-04');
+INSERT INTO "Schedule" VALUES(522,12,12,15,2,3,'2015-05-04');
+INSERT INTO "Schedule" VALUES(523,13,13,6,2,4,'2015-05-04');
+INSERT INTO "Schedule" VALUES(524,13,13,6,2,5,'2015-05-04');
+INSERT INTO "Schedule" VALUES(525,12,12,15,2,2,'2015-05-05');
+INSERT INTO "Schedule" VALUES(526,12,12,15,2,3,'2015-05-05');
+INSERT INTO "Schedule" VALUES(527,14,12,15,2,4,'2015-05-05');
+INSERT INTO "Schedule" VALUES(528,16,13,5,2,4,'2015-05-06');
+INSERT INTO "Schedule" VALUES(529,15,13,5,2,5,'2015-05-06');
+INSERT INTO "Schedule" VALUES(530,17,9,5,2,5,'2015-05-06');
+INSERT INTO "Schedule" VALUES(531,18,3,3,2,3,'2015-05-07');
+INSERT INTO "Schedule" VALUES(532,19,13,16,2,4,'2015-05-07');
+INSERT INTO "Schedule" VALUES(533,20,13,5,2,5,'2015-05-07');
+INSERT INTO "Schedule" VALUES(534,21,3,5,2,6,'2015-05-07');
+INSERT INTO "Schedule" VALUES(535,22,3,6,2,3,'2015-05-08');
+INSERT INTO "Schedule" VALUES(536,23,13,6,2,4,'2015-05-08');
+INSERT INTO "Schedule" VALUES(537,24,13,6,2,5,'2015-05-08');
+INSERT INTO "Schedule" VALUES(538,12,12,15,2,2,'2015-05-11');
+INSERT INTO "Schedule" VALUES(539,12,12,15,2,3,'2015-05-11');
+INSERT INTO "Schedule" VALUES(540,13,13,6,2,4,'2015-05-11');
+INSERT INTO "Schedule" VALUES(541,13,13,6,2,5,'2015-05-11');
+INSERT INTO "Schedule" VALUES(542,12,12,15,2,2,'2015-05-12');
+INSERT INTO "Schedule" VALUES(543,12,12,15,2,3,'2015-05-12');
+INSERT INTO "Schedule" VALUES(544,14,12,15,2,4,'2015-05-12');
+INSERT INTO "Schedule" VALUES(545,16,13,5,2,4,'2015-05-13');
+INSERT INTO "Schedule" VALUES(546,15,13,5,2,5,'2015-05-13');
+INSERT INTO "Schedule" VALUES(547,17,9,5,2,5,'2015-05-13');
+INSERT INTO "Schedule" VALUES(548,18,3,3,2,3,'2015-05-14');
+INSERT INTO "Schedule" VALUES(549,19,13,16,2,4,'2015-05-14');
+INSERT INTO "Schedule" VALUES(550,20,13,5,2,5,'2015-05-14');
+INSERT INTO "Schedule" VALUES(551,21,3,5,2,6,'2015-05-14');
+INSERT INTO "Schedule" VALUES(552,22,3,6,2,3,'2015-05-15');
+INSERT INTO "Schedule" VALUES(553,23,13,6,2,4,'2015-05-15');
+INSERT INTO "Schedule" VALUES(554,24,13,6,2,5,'2015-05-15');
+INSERT INTO "Schedule" VALUES(555,12,12,15,2,2,'2015-05-18');
+INSERT INTO "Schedule" VALUES(556,12,12,15,2,3,'2015-05-18');
+INSERT INTO "Schedule" VALUES(557,13,13,6,2,4,'2015-05-18');
+INSERT INTO "Schedule" VALUES(558,13,13,6,2,5,'2015-05-18');
+INSERT INTO "Schedule" VALUES(559,12,12,15,2,2,'2015-05-19');
+INSERT INTO "Schedule" VALUES(560,12,12,15,2,3,'2015-05-19');
+INSERT INTO "Schedule" VALUES(561,14,12,15,2,4,'2015-05-19');
+INSERT INTO "Schedule" VALUES(562,16,13,5,2,4,'2015-05-20');
+INSERT INTO "Schedule" VALUES(563,15,13,5,2,5,'2015-05-20');
+INSERT INTO "Schedule" VALUES(564,17,9,5,2,5,'2015-05-20');
+INSERT INTO "Schedule" VALUES(565,18,3,3,2,3,'2015-05-21');
+INSERT INTO "Schedule" VALUES(566,19,13,16,2,4,'2015-05-21');
+INSERT INTO "Schedule" VALUES(567,20,13,5,2,5,'2015-05-21');
+INSERT INTO "Schedule" VALUES(568,21,3,5,2,6,'2015-05-21');
+INSERT INTO "Schedule" VALUES(569,22,3,6,2,3,'2015-05-22');
+INSERT INTO "Schedule" VALUES(570,23,13,6,2,4,'2015-05-22');
+INSERT INTO "Schedule" VALUES(571,24,13,6,2,5,'2015-05-22');
+CREATE TABLE "Task" ("Id" INTEGER PRIMARY KEY NOT NULL, "Task_type_id" INTEGER NOT NULL REFERENCES "Task_type" ("Id"), "FullName" VARCHAR(100) NOT NULL, "ShortName" VARCHAR(30) NOT NULL);
+INSERT INTO "Task" VALUES(1,2,'Основы алгоритмизации и программирования','Осн. алг. и программ.');
+INSERT INTO "Task" VALUES(2,1,'Математика','Математика');
+INSERT INTO "Task" VALUES(3,2,'Математика','Математика');
+INSERT INTO "Task" VALUES(4,1,'Основы алгоритмизации и программирования','Осн. алг. и программ.');
+INSERT INTO "Task" VALUES(5,3,'Компьютерные информационные технологии','КИТ');
+INSERT INTO "Task" VALUES(6,1,'Физика','Физика');
+INSERT INTO "Task" VALUES(7,1,'Компьютерные информационные технологии','КИТ');
+INSERT INTO "Task" VALUES(8,2,'Иностранный язык','Ин. яз.');
+INSERT INTO "Task" VALUES(9,1,'Архитектуры вычислительных систем','Архитектуры выч. сист.');
+INSERT INTO "Task" VALUES(10,2,'Физика','Физика');
+INSERT INTO "Task" VALUES(11,3,'Архитектуры вычислительных систем','Архитектуры выч. сист.');
+INSERT INTO "Task" VALUES(12,2,'Тоеретическая Электротехника','ТЭЦ');
+INSERT INTO "Task" VALUES(13,1,'Системное программное обеспечение','СПО');
+INSERT INTO "Task" VALUES(14,1,'Тоеретическая Электротехника','ТЭЦ');
+INSERT INTO "Task" VALUES(15,1,'Основы информационных технологий','ОИТ');
+INSERT INTO "Task" VALUES(16,2,'Основы информационных технологий','ОИТ');
+INSERT INTO "Task" VALUES(17,3,'Основы информационных технологий','ОИТ');
+INSERT INTO "Task" VALUES(18,3,'Объектно-ориентированное программирование','ООП');
+INSERT INTO "Task" VALUES(19,1,'Объектно-ориентированное программирование','ООП');
+INSERT INTO "Task" VALUES(20,1,'Микропроцессоры и микрокомпьютеры','М&М');
+INSERT INTO "Task" VALUES(21,3,'Микропроцессоры и микрокомпьютеры','М&М');
+INSERT INTO "Task" VALUES(22,3,'Системное программное обеспечение','СПО');
+INSERT INTO "Task" VALUES(23,1,'Основы защиты информации','ОЗИ');
+INSERT INTO "Task" VALUES(24,2,'Основы защиты информации','ОЗИ');
+CREATE TABLE "Teacher" ("Id" INTEGER PRIMARY KEY NOT NULL, "LastName" VARCHAR(60) NOT NULL, "FirstName" VARCHAR(60) NOT NULL, "MiddleName" VARCHAR(60), "Post_id" INTEGER NOT NULL REFERENCES "Post" ("Id"), "Faculty" VARCHAR(50) NOT NULL DEFAULT Физический, "EduOrg" VARCHAR(200) NOT NULL DEFAULT "ГГУ им.Ф.Скарины", "City" VARCHAR(50) NOT NULL DEFAULT Гомель, "HasSchedule" NUMERIC(1,0) NOT NULL DEFAULT 0, "LastUpdate" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO "Teacher" VALUES(1,'Левчук','Виктор','Дмитриевич',3,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:06:19');
+INSERT INTO "Teacher" VALUES(2,'Воруев','Андрей','Валерьевич',3,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:06:19');
+INSERT INTO "Teacher" VALUES(3,'Чечет','Павел','Леонидович',3,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:06:19');
+INSERT INTO "Teacher" VALUES(4,'Дробышевский','Виталий','Александрович',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:09:34');
+INSERT INTO "Teacher" VALUES(5,'Кулинченко','Владимир','Николаевич',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:10:05');
+INSERT INTO "Teacher" VALUES(6,'Кучеров','Александр','Иванович',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:10:31');
+INSERT INTO "Teacher" VALUES(7,'Леванцов','Виктор','Николаевич',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:11:31');
+INSERT INTO "Teacher" VALUES(8,'Шаповалова','Наталья','Александровна',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:12:06');
+INSERT INTO "Teacher" VALUES(9,'Ходанович','Дмитрий','Александрович',1,'Математический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:25:08');
+INSERT INTO "Teacher" VALUES(10,'Абраменко','Елена','Геннадьевна',3,'Юридический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:26:29');
+INSERT INTO "Teacher" VALUES(11,'Акулич','Людмила','Давыдовна',2,'Иностранных языков','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:29:01');
+INSERT INTO "Teacher" VALUES(12,'Подалов','Максим','Александрович',1,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:30:20');
+INSERT INTO "Teacher" VALUES(13,'Купо','Александр','Николаевич',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 13:31:23');
+INSERT INTO "Teacher" VALUES(14,'Семченко','Игорь','Валентинович',3,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-16 14:01:44');
+INSERT INTO "Teacher" VALUES(15,'Баевич','Георгий','Александрович',2,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-31 16:10:51');
+INSERT INTO "Teacher" VALUES(16,'Давыдов','Владимир','Семёнович',3,'Физический','ГГУ им.Ф.Скарины','Гомель',0,'2015-03-31 16:37:23');
