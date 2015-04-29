@@ -72,7 +72,7 @@ public class TaskListAdapter extends BaseAdapter {
 		tv_letter.setText(letter); 
 		for (int i = 0; i < MainActivity.tasks.size(); i++) {
 			if (MainActivity.tasks.get(i).equals(it.getTaskName())) {
-				if (i > MainActivity.colors.length) {
+				if (i >= MainActivity.colors.length) {
 					tv_letter.setBackgroundColor(MainActivity.colors[i- MainActivity.colors.length]);
 				} else {
 					tv_letter.setBackgroundColor(MainActivity.colors[i]);

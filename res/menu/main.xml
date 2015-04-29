@@ -12,6 +12,6 @@
         android:title="@string/action_calendar" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_action_event"></item>
-    <item android:id="@+id/action_list" android:title="@string/action_list" android:showAsAction="ifRoom" android:actionLayout="@layout/class_list"></item>
+    <item android:id="@+id/action_list" android:title="@string/action_list" android:showAsAction="ifRoom|withText" android:icon="@drawable/ic_launcher"></item>
 
 </menu>

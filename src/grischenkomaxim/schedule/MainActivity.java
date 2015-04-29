@@ -102,41 +102,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		pagerAdapter = new MyFragmentStatePagerAdapter(
 				getSupportFragmentManager(), this);
 		pager.setAdapter(pagerAdapter);
-
-//		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-//				"yyyy-MM-dd", new Locale("ru"));
-		GregorianCalendar cal = new GregorianCalendar();
-		Date currentDate = new GregorianCalendar().getTime();
-		cal.setTime(currentDate);
-		cal.clear(GregorianCalendar.MILLISECOND);
-		cal.clear(GregorianCalendar.SECOND);
-		cal.clear(GregorianCalendar.MINUTE);
-		cal.clear(GregorianCalendar.HOUR);
-		cal.clear(GregorianCalendar.HOUR_OF_DAY);
-		Log.d("!!!Calendar", cal.toString());
-		currentDate = cal.getTime();
-		
-//		try {
-//			currentDate = simpleDateFormat.parse(simpleDateFormat.format(currentDate));
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-		int startPosition = 0;
-		for (int i = 0; i < schedules.size(); i++) {
-			Log.d("!!!CurrentDate", currentDate.toString());
-			Log.d("!!!ScheduleDate", schedules.get(i).date.toString());
-			if (currentDate.compareTo(schedules.get(i).date) >= 0){
-				if (currentDate.compareTo(schedules.get(i).date) == 0){
-					startPosition = i;
-				}else{
-					startPosition = i + 1;
-				}			
-			} else {
-				break;
-			}
-		}
-		
-		pager.setCurrentItem(startPosition);
+	
+		pager.setCurrentItem(getStartPosition());
 //		pager.setOnPageChangeListener(new OnPageChangeListener() {
 //
 //			@Override
@@ -156,6 +123,35 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 		// readSchedule();
 		// showList();
+	}
+
+	private int getStartPosition() {
+				GregorianCalendar cal = new GregorianCalendar();
+				Date currentDate = new GregorianCalendar().getTime();
+				cal.setTime(currentDate);
+				cal.clear(GregorianCalendar.MILLISECOND);
+				cal.clear(GregorianCalendar.SECOND);
+				cal.clear(GregorianCalendar.MINUTE);
+				cal.clear(GregorianCalendar.HOUR);
+				cal.clear(GregorianCalendar.HOUR_OF_DAY);
+				Log.d("!!!Calendar", cal.toString());
+				currentDate = cal.getTime();
+
+				int startPosition = 0;
+				for (int i = 0; i < schedules.size(); i++) {
+					Log.d("!!!CurrentDate", currentDate.toString());
+					Log.d("!!!ScheduleDate", schedules.get(i).date.toString());
+					if (currentDate.compareTo(schedules.get(i).date) >= 0){
+						if (currentDate.compareTo(schedules.get(i).date) == 0){
+							startPosition = i;
+						}else{
+							startPosition = i + 1;
+						}			
+					} else {
+						break;
+					}
+				}
+		return startPosition;
 	}
 
 	@Override
@@ -190,8 +186,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				break;
 
 			case 2:
-				currentSchedule = data.getIntExtra("selectedschedule", 0);
+				currentSchedule = schedulesList.get(data.getIntExtra("selectedschedule", 0)).id;
 				fillDates();
+				pagerAdapter.notifyDataSetChanged();
+				pager.setCurrentItem(getStartPosition());
 				break;
 			}
 		}
@@ -218,7 +216,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			return true;
 		case R.id.action_list:
 			getSchedulesList();
-			Intent schedulesListIntent = new Intent(this, ClassList.class);
+			Intent schedulesListIntent = new Intent(this, ScheduleList.class);
 			startActivityForResult(schedulesListIntent, 2);
 			return true;
 		default:
@@ -400,9 +398,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				+"from teacher t "
 				+"where t.hasSchedule = 1 "
 				+"union "
-				+"select c.Id AS Id, c.FullName AS Name from class c"
-				+"where t.hasSchedule = 1;"; 
+				+"select c.Id AS Id, c.FullName AS Name from class c "
+				+"where c.hasSchedule = 1;"; 
 		Cursor c = dbHelper.getReadableDatabase().rawQuery(sqlQuery, null);
+		schedulesList.clear();
 		if (c != null) {
 			if (c.moveToFirst()){
 				do {
