@@ -16,21 +16,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.R.color;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.util.Log;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -42,7 +47,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity /* extends ActionBarActivity */extends FragmentActivity
@@ -80,13 +89,17 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
 	int PAGE_COUNT = 5;
+	
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see android.support.v7.app.ActionBarActivity#onCreate(android.os.Bundle)
 	 */
-	@Override
+	@SuppressLint("NewApi") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
@@ -104,6 +117,41 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		pager.setAdapter(pagerAdapter);
 	
 		pager.setCurrentItem(getStartPosition());
+		
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+       // getActionBar().setHomeButtonEnabled(true);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        updateSchedulesList();
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getSchedulesListStrings()));
+        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				changeSchedule(position);				
+			}
+		});
+		
+		mDrawerToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.app_name, R.string.app_name){
+
+			@Override
+			public void onDrawerClosed(View drawerView) {
+				// TODO Auto-generated method stub
+				super.onDrawerClosed(drawerView);
+			}
+
+			@Override
+			public void onDrawerOpened(View drawerView) {
+				// TODO Auto-generated method stub
+				super.onDrawerOpened(drawerView);
+			}
+			
+		};
+		
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		
 //		pager.setOnPageChangeListener(new OnPageChangeListener() {
 //
 //			@Override
@@ -154,6 +202,22 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return startPosition;
 	}
 
+	
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onPostCreate(savedInstanceState);
+		mDrawerToggle.syncState();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -185,12 +249,12 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				pager.setCurrentItem(startPosition);
 				break;
 
-			case 2:
+/*			case 2:
 				currentSchedule = schedulesList.get(data.getIntExtra("selectedschedule", 0)).id;
 				fillDates();
-				pagerAdapter.notifyDataSetChanged();
 				pager.setCurrentItem(getStartPosition());
-				break;
+				pagerAdapter.notifyDataSetChanged();
+				break;*/
 			}
 		}
 	}
@@ -207,17 +271,16 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        
 		switch (item.getItemId()){
 		case R.id.action_settings:
 			return true;
 		case R.id.action_calendar:
 			Intent calendarIntent =  new Intent(this, grischenkomaxim.schedule.Calendar.class);
 			startActivityForResult(calendarIntent, 1);
-			return true;
-		case R.id.action_list:
-			getSchedulesList();
-			Intent schedulesListIntent = new Intent(this, ScheduleList.class);
-			startActivityForResult(schedulesListIntent, 2);
 			return true;
 		default:
             return super.onOptionsItemSelected(item);
@@ -393,7 +456,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return c;
 	}
 
-	private void getSchedulesList(){
+	private void updateSchedulesList(){
 		String sqlQuery = "select t.Id AS Id, t.LastName ||' '|| t.FirstName ||' '||t.MiddleName AS Name "
 				+"from teacher t "
 				+"where t.hasSchedule = 1 "
@@ -412,10 +475,16 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	}
 	
 	
-	private Date getLastUpdate(){
-		return null;
-		
-	}
+	@SuppressWarnings("null")
+	private List<String> getSchedulesListStrings(){
+		List<String> list = new ArrayList<String>();
+		int i = 0;
+		for (scheduleListItem item : schedulesList) {
+			list.add(item.name);
+		}
+		Log.d("!!!LIST", list.toString());
+		return list;
+	};
 	
 	private void fillDates(){
 		db = dbHelper.getWritableDatabase();
@@ -460,6 +529,19 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		db.close();
 	}
 	
+	private void changeSchedule(int position) {
+		currentSchedule = schedulesList.get(position).id;
+		schedules.clear();
+		fillDates();
+		pagerAdapter = new MyFragmentStatePagerAdapter(
+				getSupportFragmentManager(), this);
+		pager.setAdapter(pagerAdapter);
+		pager.setCurrentItem(getStartPosition());
+		Log.d("!!!CurrentPOSITION", String.valueOf(getStartPosition()));
+		Log.d("!!!COUNT", String.valueOf(schedules.size()));
+		mDrawerLayout.closeDrawer(mDrawerList);
+	}
+
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
 	 * findViewById(R.id.linLayout); LayoutInflater ltInflater =

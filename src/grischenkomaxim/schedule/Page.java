@@ -34,7 +34,7 @@ public class Page extends ListFragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		TaskListAdapter adapter = new TaskListAdapter(ctx, MainActivity.schedules.get(pageNumber).schedule);
+		TaskListAdapter adapter = new TaskListAdapter(ctx, MainActivity.schedules.get(pageNumber).date, MainActivity.schedules.get(pageNumber).schedule);
 		setListAdapter(adapter);
 	}
 
@@ -51,6 +51,6 @@ public class Page extends ListFragment {
 			Intent intent =  new Intent(ctx, TaskDetailed.class);
 			intent.putExtra("position", position);
 			intent.putExtra("pageNumber", pageNumber);
-			startActivity(intent);
+			startActivity(intent); 
 		}
 }
