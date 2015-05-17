@@ -12,5 +12,7 @@
         android:title="@string/action_calendar" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_calendar"></item>
+    <item android:id="@+id/action_server" 
+        android:title="Server"></item>
 
 </menu>

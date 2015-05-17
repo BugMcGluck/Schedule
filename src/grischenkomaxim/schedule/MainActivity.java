@@ -14,6 +14,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.R.color;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -41,6 +50,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -93,6 +103,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    
+    private static final String SERVER = "http://583fd005.ngrok.com/";
 
 	/*
 	 * (non-Javadoc)
@@ -281,6 +293,9 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		case R.id.action_calendar:
 			Intent calendarIntent =  new Intent(this, grischenkomaxim.schedule.Calendar.class);
 			startActivityForResult(calendarIntent, 1);
+			return true;
+		case R.id.action_server:
+			getScheduleFromServer();
 			return true;
 		default:
             return super.onOptionsItemSelected(item);
@@ -542,6 +557,71 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
+	private String makeGetRequest(String url) {
+		HttpClient client = new DefaultHttpClient();
+		HttpGet request = new HttpGet(url);
+		HttpResponse response = null;
+		HttpEntity entity;
+		try {
+	        response = client.execute(request);
+	        Log.d("URL", url); 
+	        Log.d("Response of GET request", response.toString());
+	    } catch (ClientProtocolException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+		/*byte[] buffer = null;
+		try {
+			response.getEntity().getContent().read(buffer);
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		entity = response.getEntity();
+		String message = null;
+		try {
+			message = EntityUtils.toString(entity);
+		} catch (org.apache.http.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return message;
+	}
+	
+	private void getScheduleFromServer(){
+		String url = SERVER + "cities.json";
+/*		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}
+		});*/
+		String response = null;
+		Task t = new Task();
+		t.execute(url);
+		try {
+			response = t.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d("Response", response);
+	}
+
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
 	 * findViewById(R.id.linLayout); LayoutInflater ltInflater =
@@ -611,8 +691,6 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 	}
 
-	
-
 	private class MyFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
 		Context ctx;
@@ -647,5 +725,15 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 					new Locale("ru"));
 			return simpleDateFormat.format(schedules.get(position).date);
 		}
+	}
+	
+	class Task extends AsyncTask<String, Void, String>{
+
+		@Override
+		protected String doInBackground(String... url) {
+			// TODO Auto-generated method stub
+			return makeGetRequest(url[0]);
+		}
+		
 	}
 }
