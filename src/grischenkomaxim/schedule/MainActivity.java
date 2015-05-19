@@ -2,18 +2,13 @@ package grischenkomaxim.schedule;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
@@ -23,22 +18,20 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.R.color;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.text.format.DateFormat;
-import android.text.format.Time;
 import android.util.Log;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -48,7 +41,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,12 +49,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity /* extends ActionBarActivity */extends FragmentActivity
 		implements OnClickListener {
@@ -85,16 +76,19 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	};
 	public static List<String> tasks = new ArrayList<String>();
 	
-	public class scheduleListItem{
-		public scheduleListItem(int _id, String _name) {
-			id = _id;
-			name = _name;
-		}
-		int id;
+	private class ListItem{
+		Long id;
 		String name;
+		public ListItem(Long id, String name) {
+			super();
+			this.id = id;
+			this.name = name;
+		}
 	}
-	public static List<scheduleListItem> schedulesList = new ArrayList<scheduleListItem>();
-	public Integer currentSchedule = 1;
+	private List<ListItem> schedulesList = new ArrayList<ListItem>();
+	public Long currentSchedule = (long) 1;
+	
+	private List<ListItem> searchList;
 	
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
@@ -122,13 +116,17 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		fillTasks();
 //		Log.d("!!!MAXDATE", maxDate.toString());
 		
-		pager = (ViewPager) findViewById(R.id.pager);
+/*		pager = (ViewPager) findViewById(R.id.pager);
 		Log.d("!!PAGER", pager.toString());
 		pagerAdapter = new MyFragmentStatePagerAdapter(
 				getSupportFragmentManager(), this);
 		pager.setAdapter(pagerAdapter);
 	
-		pager.setCurrentItem(getStartPosition());
+		pager.setCurrentItem(getStartPosition());*/
+		
+		Fragment scheduleFragment = new ScheduleFragment(this);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
 		
         getActionBar().setDisplayHomeAsUpEnabled(true);
        // getActionBar().setHomeButtonEnabled(true);
@@ -136,7 +134,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         updateSchedulesList();
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getSchedulesListStrings()));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getListStrings(schedulesList)));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -295,7 +293,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			startActivityForResult(calendarIntent, 1);
 			return true;
 		case R.id.action_server:
-			getScheduleFromServer();
+			
 			return true;
 		default:
             return super.onOptionsItemSelected(item);
@@ -483,18 +481,16 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		if (c != null) {
 			if (c.moveToFirst()){
 				do {
-					schedulesList.add(new scheduleListItem(c.getInt(0), c.getString(1)));
+					schedulesList.add(new ListItem(c.getLong(0), c.getString(1)));
 				}while (c.moveToNext());
 			}
 		}
 	}
 	
 	
-	@SuppressWarnings("null")
-	private List<String> getSchedulesListStrings(){
+	private List<String> getListStrings(List<ListItem> baseList){
 		List<String> list = new ArrayList<String>();
-		int i = 0;
-		for (scheduleListItem item : schedulesList) {
+		for (ListItem item : baseList) {
 			list.add(item.name);
 		}
 		Log.d("!!!LIST", list.toString());
@@ -597,8 +593,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return message;
 	}
 	
-	private void getScheduleFromServer(){
-		String url = SERVER + "cities.json";
+	private String makeRequestByUrl(String url){
 /*		Thread thread = new Thread(new Runnable() {
 			
 			@Override
@@ -620,8 +615,35 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			e.printStackTrace();
 		}
 		Log.d("Response", response);
+		return response;
 	}
 
+	private void updateSchedulesFromServer(){
+		
+		parseCities(makeRequestByUrl(SERVER + "cities.json"));
+	}
+	
+	private List<ListItem> parseCities(String str){
+		JSONArray jArray = null;
+		JSONObject jObject = null;
+		List<ListItem> citiesList = new ArrayList<MainActivity.ListItem>();
+		try {
+			jArray = new JSONArray(str);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(int i = 0; i < jArray.length(); i++){
+			try {
+				jObject = new JSONObject(jArray.getString(i));
+				citiesList.add(new ListItem(jObject.getLong("id"), jObject.getString("title")));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return citiesList;
+	}
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
 	 * findViewById(R.id.linLayout); LayoutInflater ltInflater =
@@ -727,12 +749,36 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 	}
 	
-	class Task extends AsyncTask<String, Void, String>{
+	private class Task extends AsyncTask<String, Void, String>{
 
 		@Override
 		protected String doInBackground(String... url) {
 			// TODO Auto-generated method stub
 			return makeGetRequest(url[0]);
+		}
+		
+	}
+	
+	private class ScheduleFragment extends Fragment{
+		
+		Context ctx;
+		public ScheduleFragment(Context context) {
+			super();
+			ctx = context;
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater,
+				@Nullable ViewGroup container,
+				@Nullable Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.pager, container, false);
+			pager = (ViewPager) rootView.findViewById(R.id.pager);
+			pagerAdapter = new MyFragmentStatePagerAdapter(
+					getSupportFragmentManager(), ctx);
+			pager.setAdapter(pagerAdapter);
+			pager.setCurrentItem(getStartPosition());
+			return rootView;
 		}
 		
 	}
