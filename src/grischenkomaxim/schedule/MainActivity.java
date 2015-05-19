@@ -53,6 +53,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public class MainActivity /* extends ActionBarActivity */extends FragmentActivity
@@ -86,9 +87,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 	}
 	private List<ListItem> schedulesList = new ArrayList<ListItem>();
-	public Long currentSchedule = (long) 1;
+	private Long currentSchedule = (long) 1;
+	private schedType currentScheduleType = schedType.Group;
 	
-	private List<ListItem> searchList;
+	List<ListItem> levelList;
 	
 	ViewPager pager;
 	PagerAdapter pagerAdapter;
@@ -99,6 +101,11 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
     private ActionBarDrawerToggle mDrawerToggle;
     
     private static final String SERVER = "http://583fd005.ngrok.com/";
+    
+    private enum schedTree {City, Univercity, Faculty, Teacher, Group, TeacherSchedule, GroupSchedule};
+    private enum schedType {Teacher, Group};
+    
+
 
 	/*
 	 * (non-Javadoc)
@@ -123,7 +130,6 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		pager.setAdapter(pagerAdapter);
 	
 		pager.setCurrentItem(getStartPosition());*/
-		
 		Fragment scheduleFragment = new ScheduleFragment(this);
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
@@ -293,7 +299,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			startActivityForResult(calendarIntent, 1);
 			return true;
 		case R.id.action_server:
-			
+			updateSchedulesFromServer(schedTree.City, 0);
 			return true;
 		default:
             return super.onOptionsItemSelected(item);
@@ -544,10 +550,13 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		currentSchedule = schedulesList.get(position).id;
 		schedules.clear();
 		fillDates();
-		pagerAdapter = new MyFragmentStatePagerAdapter(
-				getSupportFragmentManager(), this);
-		pager.setAdapter(pagerAdapter);
-		pager.setCurrentItem(getStartPosition());
+		Fragment scheduleFragment = new ScheduleFragment(this);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
+//		pagerAdapter = new MyFragmentStatePagerAdapter(
+//				getSupportFragmentManager(), this);
+//		pager.setAdapter(pagerAdapter);
+//		pager.setCurrentItem(getStartPosition());
 		Log.d("!!!CurrentPOSITION", String.valueOf(getStartPosition()));
 		Log.d("!!!COUNT", String.valueOf(schedules.size()));
 		mDrawerLayout.closeDrawer(mDrawerList);
@@ -618,15 +627,59 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return response;
 	}
 
-	private void updateSchedulesFromServer(){
+	private void updateSchedulesFromServer(schedTree treeLevel, long id){
+		List<String> labels;
+		Fragment fragment;
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		switch (treeLevel){
+		case City:
+			levelList = parseJsonToList(makeRequestByUrl(SERVER + "cities.json"), "id", "title");
+			labels = getListStrings(levelList);
+			fragment = new SearchFragment(this, labels, treeLevel);
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment).commit();
+			break;
+		case Faculty:
+			levelList = parseJsonToList(makeRequestByUrl(SERVER + "faculties/by_university/" + levelList.get((int) id).id.toString() + ".json"), "id", "title");
+			labels = getListStrings(levelList);
+			fragment = new SearchFragment(this, labels, treeLevel);
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment).commit();
+			break;
+		case Group:
+			levelList = parseJsonToList(makeRequestByUrl(SERVER + "groups/by_faculty/" + levelList.get((int) id).id.toString() + ".json"), "id", "title");
+			labels = getListStrings(levelList);
+			fragment = new SearchFragment(this, labels, treeLevel);
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment).commit();
+			break;
+		case Teacher:
+			levelList = parseJsonToList(makeRequestByUrl(SERVER + "teacher/by_university/" + levelList.get((int) id).id.toString() + ".json"), "id", "name");
+			labels = getListStrings(levelList);
+			fragment = new SearchFragment(this, labels, treeLevel);
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment).commit();
+			break;
+		case Univercity:
+			levelList = parseJsonToList(makeRequestByUrl(SERVER + "universities/by_city/" + levelList.get((int) id).id.toString() + ".json"), "id", "title");
+			labels = getListStrings(levelList);
+			fragment = new SearchFragment(this, labels, treeLevel);
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment).commit();
+			break;
+		case TeacherSchedule:
+			
+			break;
+		case GroupSchedule:
+			
+			break;
+		default:
+			break;
+			
+		}
 		
-		parseCities(makeRequestByUrl(SERVER + "cities.json"));
+		
 	}
 	
-	private List<ListItem> parseCities(String str){
+	private List<ListItem> parseJsonToList(String str, String id, String title){
 		JSONArray jArray = null;
 		JSONObject jObject = null;
-		List<ListItem> citiesList = new ArrayList<MainActivity.ListItem>();
+		List<ListItem> list = new ArrayList<MainActivity.ListItem>();
 		try {
 			jArray = new JSONArray(str);
 		} catch (JSONException e) {
@@ -636,13 +689,13 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		for(int i = 0; i < jArray.length(); i++){
 			try {
 				jObject = new JSONObject(jArray.getString(i));
-				citiesList.add(new ListItem(jObject.getLong("id"), jObject.getString("title")));
+				list.add(new ListItem(jObject.getLong(id), jObject.getString(title)));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return citiesList;
+		return list;
 	}
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
@@ -743,7 +796,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE dd MMM",
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE. ddMMM",
 					new Locale("ru"));
 			return simpleDateFormat.format(schedules.get(position).date);
 		}
@@ -778,6 +831,61 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 					getSupportFragmentManager(), ctx);
 			pager.setAdapter(pagerAdapter);
 			pager.setCurrentItem(getStartPosition());
+			return rootView;
+		}
+		
+	}
+	
+	private class SearchFragment extends Fragment{
+		Context ctx;
+		List<String> list;
+		schedTree level;
+
+		public SearchFragment(Context ctx, List<String> list, schedTree level) {
+			super();
+			this.ctx = ctx;
+			this.list = list;
+			this.level = level;
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater,
+				@Nullable ViewGroup container,
+				@Nullable Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.search_list, container, false);
+			ListView lv = (ListView) rootView.findViewById(R.id.searchList);
+			lv.setAdapter(new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, list));
+			lv.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					switch (level){
+					case City:
+						updateSchedulesFromServer(schedTree.Univercity, id);
+						break;
+					case Faculty:
+						updateSchedulesFromServer(schedTree.Group, id);
+						break;
+					case Group:
+						updateSchedulesFromServer(schedTree.GroupSchedule, id);
+						break;
+					case Teacher:
+						updateSchedulesFromServer(schedTree.TeacherSchedule, id);
+						break;
+					case Univercity:
+						if (currentScheduleType.equals(schedType.Group)){
+							updateSchedulesFromServer(schedTree.Faculty, id);
+						}else{
+						updateSchedulesFromServer(schedTree.Teacher, id);
+						}
+						break;
+					default:
+						break;
+					}
+										
+				}
+			});
 			return rootView;
 		}
 		
