@@ -11,4 +11,7 @@
     <string name="text_Auditory">Аудитория</string>
     <string name="text_TeacherSchedule">Расписание препод.</string>
     <string name="text_ClassSchedule">Расписание группы</string>
+    <string name="action_refresh">Обновить</string>
+    <string name="text_ScheduleList">Избранные</string>
+    <string name="text_addSchedule">Добавить расписание</string>
 </resources>

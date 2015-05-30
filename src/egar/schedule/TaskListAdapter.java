@@ -2,28 +2,19 @@ package egar.schedule;
 
 import egar.schedule.R;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.R.color;
 import android.content.Context;
-import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.ArcShape;
-import android.opengl.Visibility;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +30,8 @@ public class TaskListAdapter extends BaseAdapter {
 	List<Item> tasks;
 	LayoutInflater lInflater;
 	Date scheduleDate;
+	enum State {Complete, Now, ToBe};
+	State currentState;
 	
 	public TaskListAdapter(Context context, Date date, List<Item> items) {
 		super();
@@ -117,13 +110,16 @@ public class TaskListAdapter extends BaseAdapter {
 		calendar.clear(GregorianCalendar.SECOND);
 		calendar.clear(GregorianCalendar.MILLISECOND);
 		currentDate = calendar.getTime();
+		Date currentTime = new Date();
+		Date start = new Date(), end = new Date();
+		
 		
 		Log.d("!!CompareDate", String.valueOf(scheduleDate.compareTo(currentDate)));
 		Log.d("!!DATE", scheduleDate.toString());
 		Log.d("!!CurrentDate", currentDate.toString());
 		if (scheduleDate.compareTo(currentDate) == 0){
-			SimpleDateFormat sdf = new SimpleDateFormat("hh:mm", new Locale("ru"));
-			Date start = new Date(), end = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", new Locale("ru"));
+			
 			try {
 				start = sdf.parse(it.getTask_timeStart());
 				Log.d("!!StartTime", start.toString());
@@ -141,42 +137,57 @@ public class TaskListAdapter extends BaseAdapter {
 			calendar.clear();
 			calendar.set(GregorianCalendar.HOUR_OF_DAY, GregorianCalendar.getInstance().get(GregorianCalendar.HOUR_OF_DAY));
 			calendar.set(GregorianCalendar.MINUTE, GregorianCalendar.getInstance().get(GregorianCalendar.MINUTE));
+			currentTime = calendar.getTime();
 			Log.d("!!Calendar", calendar.toString());
-			Date currentTime = calendar.getTime();
 			Log.d("!!CurrentTime", currentTime.toString());
 			if (currentTime.after(start) & currentTime.before(end)){
-
-				GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {Color.LTGRAY, Color.DKGRAY});
-				gd.setShape(GradientDrawable.RECTANGLE);
-				
-				//gd.setSize((int) (80 * ctx.getResources().getDisplayMetrics().density), (int) ((80 * ctx.getResources().getDisplayMetrics().density) * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
-				tv_letter.setHeight((int) ((80 * ctx.getResources().getDisplayMetrics().density) * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
-				Log.d("!!GRADIENT_Width", String.valueOf(tv_letter.getWidth()));
-				Log.d("!!GRADIENT_Heigth", String.valueOf(tv_letter.getHeight() * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
-			    ShapeDrawable shape = new ShapeDrawable(new ArcShape(0, 360 * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
-				//arcShape.resize((int) ((80 * ctx.getResources().getDisplayMetrics().density)), (int) ((80 * ctx.getResources().getDisplayMetrics().density)));
-			    
-			    shape.setIntrinsicHeight((int) ((80 * ctx.getResources().getDisplayMetrics().density)));
-			    shape.setIntrinsicWidth((int) ((80 * ctx.getResources().getDisplayMetrics().density)));
-			    shape.getPaint().setColor(Color.GRAY);
-			    Log.d("!!!ARC", String.valueOf(shape.getIntrinsicHeight()));
-			    tv_letter.setBackgroundDrawable(shape);
+				currentState = State.Now;
 			}
 			
 			if(currentTime.after(end)){
-				//tv_letter.setBackgroundColor(Color.GRAY);
-				tv_letter.setBackgroundResource(R.drawable.back_left); 
-				tv_letter.setText("✔");
+				currentState = State.Complete;
 			}
+			
+			if(currentTime.before(start)){
+				currentState = State.ToBe;
+			}
+			
 			
 		}
 		
 		if (scheduleDate.compareTo(currentDate) < 0){
-			//tv_letter.setBackgroundColor(Color.GRAY);
-			tv_letter.setBackgroundResource(R.drawable.back_left);
-			tv_letter.setText("✔");
+			currentState = State.Complete;
+		}
+		if (scheduleDate.compareTo(currentDate) > 0){
+			currentState = State.ToBe;
 		}
 		
+		Log.d("CurrentState", currentState.toString());
+		switch (currentState){
+		case Complete:
+			setBackgroundComplete(tv_letter, R.drawable.back_left);
+			break;
+		case Now:
+			GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {Color.LTGRAY, Color.DKGRAY});
+			gd.setShape(GradientDrawable.RECTANGLE);
+			
+			//gd.setSize((int) (80 * ctx.getResources().getDisplayMetrics().density), (int) ((80 * ctx.getResources().getDisplayMetrics().density) * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
+			tv_letter.setHeight((int) ((80 * ctx.getResources().getDisplayMetrics().density) * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
+			Log.d("!!GRADIENT_Width", String.valueOf(tv_letter.getWidth()));
+			Log.d("!!GRADIENT_Heigth", String.valueOf(tv_letter.getHeight() * (int) ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
+		    ShapeDrawable shape = new ShapeDrawable(new ArcShape(270, 360 * ((float)(currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
+			//arcShape.resize((int) ((80 * ctx.getResources().getDisplayMetrics().density)), (int) ((80 * ctx.getResources().getDisplayMetrics().density)));
+		    Log.d("Angle", String.valueOf(360 * ((float)(currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime()))));
+		    shape.setIntrinsicHeight((int) ((80 * ctx.getResources().getDisplayMetrics().density)));
+		    shape.setIntrinsicWidth((int) ((80 * ctx.getResources().getDisplayMetrics().density)));
+		    shape.getPaint().setColor(Color.GRAY);
+		    Log.d("!!!ARC", String.valueOf(shape.getIntrinsicHeight()));
+		    tv_letter.setBackgroundDrawable(shape);
+		    break;
+		case ToBe:
+			break;
+		}
+
 		//Log.d("!!Background", String.valueOf(tv_letter.getDrawingCacheBackgroundColor()));
 		/*Log.d("!!!POsition", String.valueOf(position));
 		Log.d("!!!POs % 2", String.valueOf(position % 2));
@@ -193,11 +204,16 @@ public class TaskListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				if (taskActions.getVisibility() == View.GONE) {
-					taskActions.setVisibility(View.VISIBLE);
-					tv_letter.setBackgroundResource(R.drawable.back_left_top);
+					taskActions.setVisibility(View.VISIBLE); 
+					if (currentState == State.Complete){
+						tv_letter.setBackgroundResource(R.drawable.back_left_top);
+					}
+					
 				} else if (taskActions.getVisibility() == View.VISIBLE) {
 					taskActions.setVisibility(View.GONE);
-					tv_letter.setBackgroundResource(R.drawable.back_left);
+					if (currentState == State.Complete){
+						tv_letter.setBackgroundResource(R.drawable.back_left);
+					}
 				}
 			}
 		});
@@ -222,6 +238,11 @@ public class TaskListAdapter extends BaseAdapter {
 			}
 		});
 		return taskView;
+	}
+	
+	private void setBackgroundComplete(TextView view, int resId){
+		view.setBackgroundResource(resId);
+		view.setText("✔");
 	}
 
 }

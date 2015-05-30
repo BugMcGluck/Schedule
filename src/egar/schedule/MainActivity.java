@@ -26,6 +26,8 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,6 +56,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity /* extends ActionBarActivity */extends FragmentActivity
 		implements OnClickListener {
@@ -89,6 +92,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	private Long currentSchedule = (long) 1;
 	private schedType currentScheduleType = schedType.Group;
 	
+	private SharedPreferences sPref;
+	
 	List<ListItem> levelList;
 	
 	ViewPager pager;
@@ -96,7 +101,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 //	int PAGE_COUNT = 5;
 	
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+//    private ListView mDrawerList;
+    private View mDrawerView;
     private ActionBarDrawerToggle mDrawerToggle;
     
     private static final String SERVER = "https://3574a6a2.ngrok.com/";
@@ -128,10 +134,15 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	@SuppressLint("NewApi") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		sPref = getPreferences(MODE_PRIVATE);
+		currentSchedule = sPref.getLong("CurrentSchedule", 1);
+		Log.d("Cuurent Schedule", currentSchedule.toString());
+		currentScheduleType = schedType.valueOf(sPref.getString("ScheduleType","Group"));
 		setContentView(R.layout.main);
 
 		dbHelper = new DBHelper(this, DBNAME);
 //		maxDate = getScheduleLastDate();
+		updateSchedulesList();
 		fillDates();
 //		fillTasks();
 //		Log.d("!!!MAXDATE", maxDate.toString());
@@ -143,6 +154,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		pager.setAdapter(pagerAdapter);
 	
 		pager.setCurrentItem(getStartPosition());*/
+		
 		Fragment scheduleFragment = new ScheduleFragment(this);
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
@@ -150,10 +162,13 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		getActionBar().setDisplayHomeAsUpEnabled(true);
        // getActionBar().setHomeButtonEnabled(true);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mDrawerView = findViewById(R.id.left_drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        updateSchedulesList();
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getListStrings(schedulesList)));
+        
+        Fragment drawerFragment = new DrawerFragment(this, getListStrings(schedulesList));
+        fragmentManager.beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+/*        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getListStrings(schedulesList)));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -162,7 +177,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				changeCurrentSchedule(position);				
 			}
 		});
-		
+		*/
 		mDrawerToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.app_name, R.string.app_name){
 
 			@Override
@@ -200,6 +215,17 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 
 		// readSchedule();
 		// showList();
+	}
+
+	@Override
+	protected void onDestroy() {
+		sPref = getPreferences(MODE_PRIVATE);
+		Editor e = sPref.edit();
+		e.putLong("CurrentSchedule", currentSchedule);
+		e.putString("ScheduleType", currentScheduleType.toString());
+		e.commit();
+		Log.d("SaveleSchedule", currentSchedule.toString());
+		super.onDestroy();
 	}
 
 	private int getStartPosition() {
@@ -300,22 +326,28 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        
-		switch (item.getItemId()){
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+
+		switch (item.getItemId()) {
 		case R.id.action_settings:
 			return true;
 		case R.id.action_calendar:
-			Intent calendarIntent =  new Intent(this, egar.schedule.Calendar.class);
+			Intent calendarIntent = new Intent(this,
+					egar.schedule.Calendar.class);
 			startActivityForResult(calendarIntent, 1);
 			return true;
 		case R.id.action_server:
 			updateSchedulesFromServer(schedTree.City, 0);
 			return true;
+		case R.id.action_refresh:
+			if(updateCurrentSchedule()){
+				Toast.makeText(this, "Расписание обновлено", Toast.LENGTH_LONG).show();
+			}
+			return true;
 		default:
-            return super.onOptionsItemSelected(item);
+			return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -471,10 +503,11 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				+ "left join task_time on schedule.task_time_id = task_time.id "
 				+ "left join task_type on task.task_type_id = task_type.id ";
 		if(currentScheduleType.equals(schedType.Group)){
-			sqlQuery = sqlQuery + "where schedule.Class_id = ? " + "and schedule.day = ?;";
+			sqlQuery = sqlQuery + "where schedule.Class_id = ? " + "and schedule.day = ?";
 		}else{
-			sqlQuery = sqlQuery + "where schedule.Teacher_id = ? " + "and schedule.day = ?;";
+			sqlQuery = sqlQuery + "where schedule.Teacher_id = ? " + "and schedule.day = ?";
 		}
+		sqlQuery = sqlQuery + "order by Task_timeStartTime;";
 		c = dbHelper.getWritableDatabase().rawQuery(sqlQuery, new String[] { currentSchedule.toString(), date });
 		return c;
 	}
@@ -572,7 +605,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 //		pager.setCurrentItem(getStartPosition());
 		Log.d("!!!CurrentPOSITION", String.valueOf(getStartPosition()));
 		Log.d("!!!COUNT", String.valueOf(schedules.size()));
-		mDrawerLayout.closeDrawer(mDrawerList);
+		mDrawerLayout.closeDrawer(mDrawerView);
 	}
 
 	private String makeGetRequest(String url) {
@@ -724,49 +757,94 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return list;
 	}
 	
-	private void writeUpdatedSchedule(String jsonString){
-		Log.d("Tree", updatedScheduleTree.faculty + updatedScheduleTree.university + updatedScheduleTree.city);
-		clearOldSchedule();
-		parseJsonSchedule(jsonString);
-		updateSchedulesList();
-		mDrawerList.invalidate();
-		Log.d("ScheduleList", String.valueOf(schedulesList.size()));
-		Log.d("Type", updatedScheduleTree.type.toString());
-		Log.d("ID", updatedScheduleTree.groupId.toString());
-		if(updatedScheduleTree.type.equals(schedType.Group)){
-			for (ListItem item : schedulesList) {
-				if (item.id.equals(updatedScheduleTree.groupId)){
-					Log.d("Name", item.name);
-					changeCurrentSchedule(schedulesList.indexOf(item));
-				}
+	private boolean updateCurrentSchedule(){
+		db = dbHelper.getReadableDatabase();
+		Cursor c;
+		if (currentScheduleType == schedType.Group){
+			c = db.query("Class", new String[] {"Name", "Faculty", "EduOrg", "City"}, "Id = ?", new String[] {currentSchedule.toString()}, null, null, null);
+			if (c != null && c.moveToFirst()){
+				updatedScheduleTree.city = c.getString(c.getColumnIndex("City"));
+				updatedScheduleTree.faculty = c.getString(c.getColumnIndex("Faculty"));
+				updatedScheduleTree.university = c.getString(c.getColumnIndex("EduOrg"));
+				updatedScheduleTree.group = c.getString(c.getColumnIndex("Name"));
+				updatedScheduleTree.groupId = currentSchedule;
+				updatedScheduleTree.type = schedType.Group;
 			}
+			return writeUpdatedSchedule(makeRequestByUrl(SERVER + "lessons/by_group/" + currentSchedule.toString() + ".json"));
 		}else{
-			for (ListItem item : schedulesList) {
-				if (item.id.equals(updatedScheduleTree.teacherId)){
-					changeCurrentSchedule(schedulesList.indexOf(item));
+			c = db.query("Teacher", new String[] {"Name", "EduOrg", "City"}, "Id = ?", new String[] {currentSchedule.toString()}, null, null, null);
+			if (c != null && c.moveToFirst()){
+				updatedScheduleTree.city = c.getString(c.getColumnIndex("City"));
+				updatedScheduleTree.university = c.getString(c.getColumnIndex("EduOrg"));
+				updatedScheduleTree.teacher = c.getString(c.getColumnIndex("Name"));
+				updatedScheduleTree.teacherId = currentSchedule;
+				updatedScheduleTree.type = schedType.Teacher;
+			}
+			return writeUpdatedSchedule(makeRequestByUrl(SERVER + "lessons/by_teacher/" + currentSchedule.toString() + ".json"));
+		}
+	
+	}
+	
+	private boolean writeUpdatedSchedule(String jsonString) {
+		Log.d("Tree", updatedScheduleTree.faculty
+				+ updatedScheduleTree.university + updatedScheduleTree.city);
+		db = dbHelper.getWritableDatabase();
+		db.beginTransaction();
+		clearOldSchedule();
+		boolean isSucceful = parseJsonSchedule(jsonString);
+		if (isSucceful) {
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			dbHelper.close();
+			updateSchedulesList();
+			mDrawerLayout.invalidate();
+			Log.d("ScheduleList", String.valueOf(schedulesList.size()));
+			Log.d("Type", updatedScheduleTree.type.toString());
+			Log.d("ID", updatedScheduleTree.groupId.toString());
+			if (updatedScheduleTree.type.equals(schedType.Group)) {
+				for (ListItem item : schedulesList) {
+					if (item.id.equals(updatedScheduleTree.groupId)) {
+						Log.d("Name", item.name);
+						changeCurrentSchedule(schedulesList.indexOf(item));
+					}
+				}
+			} else {
+				for (ListItem item : schedulesList) {
+					if (item.id.equals(updatedScheduleTree.teacherId)) {
+						changeCurrentSchedule(schedulesList.indexOf(item));
+					}
 				}
 			}
+			return true;
+		} else {
+			db.endTransaction();
+			dbHelper.close();
+			Fragment scheduleFragment = new ScheduleFragment(this);
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
+			return false;
 		}
+
 	}
 	
 	private void clearOldSchedule(){
-		db = dbHelper.getWritableDatabase();
-		db.beginTransaction();
+//		db = dbHelper.getWritableDatabase();
+//		db.beginTransaction();
 		if (updatedScheduleTree.type.equals(schedType.Group)){
 			db.delete("Schedule", "Class_id = ?", new String[] {String.valueOf(updatedScheduleTree.groupId)});
 		} else if (updatedScheduleTree.type.equals(schedType.Teacher)){
 			db.delete("Schedule", "Teacher_id = ?", new String[] {String.valueOf(updatedScheduleTree.teacherId)});
 		}
-		db.setTransactionSuccessful();
-		db.endTransaction();
-		dbHelper.close();
+//		db.setTransactionSuccessful();
+//		db.endTransaction();
+//		dbHelper.close();
 	}
 	
-	private void parseJsonSchedule(String jsonString){
+	private boolean parseJsonSchedule(String jsonString){
 		JSONArray jArray = null;
 		JSONObject jObject = null;
-		db = dbHelper.getWritableDatabase();
-		db.beginTransaction();
+//		db = dbHelper.getWritableDatabase();
+//		db.beginTransaction();
 		ContentValues row;
 		Cursor c;
 		Long rowid;
@@ -774,9 +852,11 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		try {
 			jArray = new JSONArray(jsonString);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			Toast.makeText(this, "Ошибка соединения с сервером", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
+			return false;
 		}
+
 		for(int i = 0; i < jArray.length(); i++){
 			try {
 				jObject = new JSONObject(jArray.getString(i));
@@ -915,7 +995,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				}
 			}
 			//Заполняем все даты с интервалом неделя или две
-			for (iter = firstDate; iter.getTimeInMillis() < endCal
+			for (iter = firstDate; iter.getTimeInMillis() <= endCal
 					.getTimeInMillis(); iter.add(
 					GregorianCalendar.WEEK_OF_YEAR, weekAdd)) {
 				row = new ContentValues();
@@ -992,9 +1072,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				}
 			}
 		}
-		db.setTransactionSuccessful(); 
-		db.endTransaction();
-		dbHelper.close();
+//		db.setTransactionSuccessful(); 
+//		db.endTransaction();
+//		dbHelper.close();
+		return true;
 	}
 	/*
 	 * private void showList() { LinearLayout linLayout = (LinearLayout)
@@ -1195,6 +1276,37 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		
 	}
 
+	private class DrawerFragment extends Fragment{
+		Context ctx;
+		List<String> list;
+		
+		public DrawerFragment(Context ctx, List<String> list) {
+			super();
+			this.ctx = ctx;
+			this.list = list;
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater,
+				@Nullable ViewGroup container,
+				@Nullable Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.drawer, container, false);
+			ListView lv = (ListView) rootView.findViewById(R.id.scheduleList);
+			lv.setAdapter(new ArrayAdapter<String>(ctx, R.layout.drawer_list_element, list));
+			lv.setOnItemClickListener(new OnItemClickListener(){
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					changeCurrentSchedule(position);
+					
+				}
+				
+			});
+			return rootView;
+		}
+		
+	}
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
