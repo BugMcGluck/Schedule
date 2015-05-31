@@ -1,20 +1,24 @@
 package egar.schedule;
 
+import egar.schedule.MainActivity.schedType;
 import egar.schedule.R;
 
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.Intent;
+import android.drm.DrmStore.Action;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.ArcShape;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +70,7 @@ public class TaskListAdapter extends BaseAdapter {
 			taskView = lInflater.inflate(R.layout.list_element, parent, false);
 		}
 		
-		Item it = (Item) getItem(position);
+		final Item it = (Item) getItem(position);
 		
 		TextView tv_task = (TextView) taskView.findViewById(R.id.textTask);
 		TextView tv_taskType = (TextView) taskView.findViewById(R.id.textTaskType);
@@ -74,6 +78,7 @@ public class TaskListAdapter extends BaseAdapter {
 		TextView tv_room = (TextView) taskView.findViewById(R.id.textRoom);
 		TextView tv_task_start_time = (TextView) taskView.findViewById(R.id.textTaskStartTime);
 		TextView tv_task_end_time = (TextView) taskView.findViewById(R.id.textTaskEndTime);
+		TextView tv_actionSchedule = (TextView) taskView.findViewById(R.id.taskActionScheduleText);
 		final TextView tv_letter = (TextView) taskView.findViewById(R.id.textLetterIcon);
 
 		
@@ -84,7 +89,14 @@ public class TaskListAdapter extends BaseAdapter {
 //						+ it.teacher.lastName + " "
 //						+ it.teacher.firstName.charAt(0) + ". " 
 //						+ it.teacher.middleName.charAt(0) + ".";
-		tv_teacher.setText(it.teacher.getName());
+		if(MainActivity.currentScheduleType == MainActivity.schedType.Group){
+			tv_teacher.setText(it.teacher.getName());
+			tv_actionSchedule.setText(R.string.text_TeacherSchedule);
+		}else{
+			tv_teacher.setText(it.clas.getName());
+			tv_actionSchedule.setText(R.string.text_ClassSchedule);
+		}
+		
 //		String room = "к." + it.room.building.name + ", а." + it.room.name;
 		tv_room.setText(it.getRoom());
 		tv_task_start_time.setText(it.getTask_timeStart());
@@ -225,6 +237,8 @@ public class TaskListAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				taskActions.setVisibility(View.GONE);
 				tv_letter.setBackgroundResource(R.drawable.back_left);
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q="+ it.room.getAddress()));
+				ctx.startActivity(intent);
 			}
 		});
 		

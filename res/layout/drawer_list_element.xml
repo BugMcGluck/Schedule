@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
-    android:textColor="@android:color/white"
-    android:textSize="15sp" >
+    android:layout_gravity="fill"
+    android:background="@android:color/black"
+    android:gravity="fill"
+    android:orientation="horizontal" >
 
-</TextView>
+    <TextView
+        android:id="@+id/text_schedule"
+        android:layout_width="200dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="left"
+        android:gravity="center_vertical"
+        android:text="AAAAA"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/deleteSchedule"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:src="@android:drawable/ic_menu_delete" />
+
+</LinearLayout>

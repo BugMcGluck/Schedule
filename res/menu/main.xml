@@ -2,18 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="grischenkomaxim.schedule.MainActivity" >
-
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" android:showAsAction="never"/>
     <item android:id="@+id/action_calendar" 
         android:title="@string/action_calendar" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_calendar" android:orderInCategory="10"></item>
-    <item android:id="@+id/action_server" 
-        android:title="Server"></item>
     <item android:id="@+id/action_refresh" 
         android:icon="@drawable/ic_action_refresh" 
         android:showAsAction="ifRoom" android:title="@string/action_refresh" android:orderInCategory="5"></item>

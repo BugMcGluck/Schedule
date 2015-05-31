@@ -120,7 +120,7 @@
                 android:layout_height="50dp"
                 android:contentDescription="taskActionPlaceImage"
                 android:scaleType="center"
-                android:src="@drawable/ic_place" />
+                android:src="@android:drawable/ic_dialog_map" />
 
             <TextView
                 android:id="@+id/taskActionPlaceText"
@@ -145,9 +145,9 @@
                 android:id="@+id/taskActionScheduleImage"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:contentDescription="taskActionScheduleImage"
                 android:scaleType="center"
-                android:src="@drawable/ic_calendar" 
-                android:contentDescription="taskActionScheduleImage"/>
+                android:src="@drawable/ic_calendar" />
 
             <TextView
                 android:id="@+id/taskActionScheduleText"

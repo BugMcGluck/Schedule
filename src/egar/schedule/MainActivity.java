@@ -23,8 +23,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -32,7 +36,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Color;
+import android.net.sip.SipAudioCall.Listener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -55,10 +59,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity /* extends ActionBarActivity */extends FragmentActivity
+public class MainActivity /* extends ActionBarActivity */extends FragmentActivity 
 		implements OnClickListener {
 
 	DBHelper dbHelper;
@@ -90,7 +98,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	}
 	private List<ListItem> schedulesList = new ArrayList<ListItem>();
 	private Long currentSchedule = (long) 1;
-	private schedType currentScheduleType = schedType.Group;
+	public static schedType currentScheduleType = schedType.Group;
 	
 	private SharedPreferences sPref;
 	
@@ -108,7 +116,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
     private static final String SERVER = "https://3574a6a2.ngrok.com/";
     
     private enum schedTree {City, Univercity, Faculty, Teacher, Group, TeacherSchedule, GroupSchedule};
-    private enum schedType {Teacher, Group};
+    public enum schedType {Teacher, Group};
     
     private class UpdatedScheduleTree{
 		private String city;
@@ -154,9 +162,12 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		pager.setAdapter(pagerAdapter);
 	
 		pager.setCurrentItem(getStartPosition());*/
-		
-		Fragment scheduleFragment = new ScheduleFragment(this);
-		FragmentManager fragmentManager = getSupportFragmentManager();
+		if (schedulesList.size() == 0){
+			DialogFragment dlg = new ScheduleTypeDialog();
+			dlg.show(getFragmentManager(), "dlg");
+		}
+		android.app.Fragment scheduleFragment = new ScheduleFragment(this);
+		android.app.FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -166,7 +177,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		mDrawerView = findViewById(R.id.left_drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         
-        Fragment drawerFragment = new DrawerFragment(this, getListStrings(schedulesList));
+        android.app.Fragment drawerFragment = new DrawerFragment(this, getListStrings(schedulesList));
         fragmentManager.beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
 /*        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, getListStrings(schedulesList)));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
@@ -331,15 +342,10 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		}
 
 		switch (item.getItemId()) {
-		case R.id.action_settings:
-			return true;
 		case R.id.action_calendar:
 			Intent calendarIntent = new Intent(this,
 					egar.schedule.Calendar.class);
 			startActivityForResult(calendarIntent, 1);
-			return true;
-		case R.id.action_server:
-			updateSchedulesFromServer(schedTree.City, 0);
 			return true;
 		case R.id.action_refresh:
 			if(updateCurrentSchedule()){
@@ -513,7 +519,18 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 	}
 
 	private void deleteSchedule(int position){
-		
+		ContentValues cv = new ContentValues();
+		cv.put("hasSchedule", 0);
+		db = dbHelper.getWritableDatabase();
+		db.beginTransaction();
+		if (1 == db.update("Class", cv, "Id = ?", new String[] {schedulesList.get(position).id.toString()})){
+			db.setTransactionSuccessful();
+			Toast.makeText(this, "Расписание удалено", Toast.LENGTH_LONG).show();
+		}
+		db.endTransaction();
+		db.close();
+		updateSchedulesList();
+		mDrawerLayout.requestLayout();
 	}
 	
 	private void updateSchedulesList(){
@@ -548,9 +565,9 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		db = dbHelper.getWritableDatabase();
 		String sqlQuery;
 		if (currentScheduleType.equals(schedType.Group)){
-			sqlQuery = "select distinct day from schedule where class_id = ?;";
+			sqlQuery = "select distinct day from schedule where class_id = ? order by day;";
 		}else{
-			sqlQuery = "select distinct day from schedule where teacher_id = ?;";
+			sqlQuery = "select distinct day from schedule where teacher_id = ? order by day;";
 		}
 		schedules.clear();
 		Cursor c = null;
@@ -592,12 +609,12 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		db.close();
 	}*/
 	
-	private void changeCurrentSchedule(int position) {
+	public void changeCurrentSchedule(int position) {
 		currentSchedule = schedulesList.get(position).id;
 		schedules.clear();
 		fillDates();
-		Fragment scheduleFragment = new ScheduleFragment(this);
-		FragmentManager fragmentManager = getSupportFragmentManager();
+		android.app.Fragment scheduleFragment = new ScheduleFragment(this);
+		android.app.FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
 //		pagerAdapter = new MyFragmentStatePagerAdapter(
 //				getSupportFragmentManager(), this);
@@ -673,11 +690,15 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		return response;
 	}
 
+	private void startUpdatingShedule (){
+		
+	}
+	
 	//Запускает поиск и обновление расписания с сервера
 	private void updateSchedulesFromServer(schedTree treeLevel, long position){
 		List<String> labels;
-		Fragment fragment;
-		FragmentManager fragmentManager = getSupportFragmentManager();
+		android.app.Fragment fragment;
+		android.app.FragmentManager fragmentManager = getFragmentManager();
 		switch (treeLevel){
 		case City:
 			levelList = parseJsonToList(makeRequestByUrl(SERVER + "cities.json"), "id", "title");
@@ -797,7 +818,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 			db.endTransaction();
 			dbHelper.close();
 			updateSchedulesList();
-			mDrawerLayout.invalidate();
+			mDrawerLayout.requestLayout();
 			Log.d("ScheduleList", String.valueOf(schedulesList.size()));
 			Log.d("Type", updatedScheduleTree.type.toString());
 			Log.d("ID", updatedScheduleTree.groupId.toString());
@@ -819,8 +840,8 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		} else {
 			db.endTransaction();
 			dbHelper.close();
-			Fragment scheduleFragment = new ScheduleFragment(this);
-			FragmentManager fragmentManager = getSupportFragmentManager();
+			android.app.Fragment scheduleFragment = new ScheduleFragment(this);
+			android.app.FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction().replace(R.id.contentFrame, scheduleFragment).commit();
 			return false;
 		}
@@ -1192,7 +1213,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		
 	}
 	
-	private class ScheduleFragment extends Fragment{
+	private class ScheduleFragment extends android.app.Fragment{
 		
 		Context ctx;
 		public ScheduleFragment(Context context) {
@@ -1221,7 +1242,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		
 	}
 	
-	private class SearchFragment extends Fragment{
+	private class SearchFragment extends android.app.Fragment{
 		Context ctx;
 		List<String> list;
 		schedTree level;
@@ -1276,7 +1297,7 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 		
 	}
 
-	private class DrawerFragment extends Fragment{
+	private class DrawerFragment extends android.app.Fragment{
 		Context ctx;
 		List<String> list;
 		
@@ -1292,21 +1313,145 @@ public class MainActivity /* extends ActionBarActivity */extends FragmentActivit
 				@Nullable Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.drawer, container, false);
 			ListView lv = (ListView) rootView.findViewById(R.id.scheduleList);
-			lv.setAdapter(new ArrayAdapter<String>(ctx, R.layout.drawer_list_element, list));
-			lv.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					changeCurrentSchedule(position);
-					
-				}
+			lv.setAdapter(new ScheduleListAdapter(list, ctx));
+			LinearLayout lAdd = (LinearLayout) rootView.findViewById(R.id.addSchedulРµ);
+			lAdd.setOnClickListener(new OnClickListener() {
 				
+				@Override
+				public void onClick(View v) {
+					mDrawerLayout.closeDrawer(mDrawerView);
+					DialogFragment dlg = new ScheduleTypeDialog();
+					dlg.show(getFragmentManager(), "dlg");
+				}
 			});
 			return rootView;
 		}
 		
 	}
+	private class ScheduleListAdapter extends BaseAdapter {
+
+		List<String> list;
+		Context ctx;
+		LayoutInflater lInflater;
+		
+		public ScheduleListAdapter(List<String> list, Context ctx) {
+			super();
+			this.list = list;
+			this.ctx = ctx;
+			this.lInflater = (LayoutInflater) ctx
+			        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);;
+		}
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) {
+			if(convertView == null){
+				convertView = lInflater.inflate(R.layout.drawer_list_element, parent, false);
+			}
+			TextView tv_schedule = (TextView) convertView.findViewById(R.id.text_schedule);
+			tv_schedule.setText((String)getItem(position));
+			ImageView iv_delete =  (ImageView) convertView.findViewById(R.id.deleteSchedule);
+
+			tv_schedule.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					changeCurrentSchedule(position);
+				}
+			});
+			
+			iv_delete.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+//					deleteSchedule(position);
+					mDrawerLayout.closeDrawer(mDrawerView);
+					DialogFragment dlg = new ScheduleDeleteDialog().newInstance(position);
+					dlg.show(getFragmentManager(), "dlg2");
+				}
+			});
+			return convertView;
+		}
+
+	}
+	
+	private class ScheduleTypeDialog extends DialogFragment implements android.content.DialogInterface.OnClickListener{
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder adb = new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.text_addSchedule)
+					.setPositiveButton(R.string.text_Teacher, this)
+					.setNegativeButton(R.string.text_Group, this)
+					.setMessage(R.string.text_ChooseScheduleType);
+			return adb.create();
+		}
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch(which){
+			case Dialog.BUTTON_POSITIVE:
+				currentScheduleType = schedType.Teacher;
+				break;
+			case Dialog.BUTTON_NEGATIVE:
+				currentScheduleType = schedType.Group;
+				break;
+			}
+			updateSchedulesFromServer(schedTree.City, 0);
+		}
+		
+	}
+	
+	private class ScheduleDeleteDialog extends DialogFragment implements DialogInterface.OnClickListener{
+
+		int position;
+		
+		public ScheduleDeleteDialog newInstance(int position) {
+			ScheduleDeleteDialog frag = new ScheduleDeleteDialog();
+			this.position = position;
+			return frag;
+		}
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch(which){
+			case Dialog.BUTTON_POSITIVE:
+				deleteSchedule(position);
+				break;
+			case Dialog.BUTTON_NEGATIVE:
+				
+				break;
+			}
+		}
+
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder adb = new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.text_DeleteSchedule)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setPositiveButton(android.R.string.yes, this)
+					.setNegativeButton(android.R.string.no, this)
+					.setMessage(R.string.text_AcceptDeletingShedule);
+			return adb.create();
+		}
+		
+	}
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub

@@ -14,4 +14,8 @@
     <string name="action_refresh">Обновить</string>
     <string name="text_ScheduleList">Избранные</string>
     <string name="text_addSchedule">Добавить расписание</string>
+    <string name="text_Group">Учебная группа</string>
+    <string name="text_ChooseScheduleType">Выберите тип расписания</string>
+    <string name="text_DeleteSchedule">Удаление расписания</string>
+    <string name="text_AcceptDeletingShedule">Вы действительно хотите удалить это расписание?</string>
 </resources>
